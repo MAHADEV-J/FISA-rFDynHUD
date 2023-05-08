@@ -111,7 +111,7 @@ public class timingtower extends Widget
         
         int top = ( rowHeight - fh ) / 2;
         
-        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+64 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
+        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+60 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
         top += rowHeight;
         for(int i=0;i < maxNumItems;i++)
         { 
@@ -211,6 +211,10 @@ public class timingtower extends Widget
                             	gaps[i].update("OUT");
                             }
                             gaps[0].update("Leader");
+                            if(scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
+                            {
+                            	gaps[0].update("Winner");
+                            }
                             break;
                 }
             }
@@ -325,9 +329,19 @@ public class timingtower extends Widget
             int drawncars = Math.min( scoringInfo.getNumVehicles(), numVeh.getValue() );
             short posOffset = 0; // the top position that should be drawn on screen (0-indexed)
             
+            String status = "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps());
+            if (scoringInfo.getGamePhase() == GamePhase.FORMATION_LAP || scoringInfo.getGamePhase() == GamePhase.BEFORE_SESSION_HAS_BEGUN || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() < 1)
+            {
+            	status = "FORMATION LAP";
+            }
+            else if (scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
+            {
+            	status = "FINISH";
+            }
+            
             if (String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit()) == "LAPS")
             {
-            	dsStatus.draw(offsetX, offsetY, "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps()), texture);
+            	dsStatus.draw(offsetX, offsetY, status, texture);
             }
             for(int i=0;i < drawncars;i++)
             { 

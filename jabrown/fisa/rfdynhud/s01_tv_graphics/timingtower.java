@@ -83,6 +83,7 @@ import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_gr
 //20230508 0846: commented out even more code in UpdateVisibility and added call to FillArrayValues in DrawWidget
 //20230508 0852: made a small adjustment to DrawWidget
 //20230508 0859: made some more small adjustments to DrawWidget and UpdateVisibility
+//20230508 0938: uploaded all this crap to GitHub
 
 public class timingtower extends Widget
 {

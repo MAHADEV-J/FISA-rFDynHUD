@@ -46,6 +46,7 @@ public class timingtower extends Widget
     private final ImagePropertyWithTexture imgNeutral = new ImagePropertyWithTexture( "imgTime", "prunn/f1_2011/tower/bg_gap.png" );
     private final ColorProperty fontColor1 = new ColorProperty("fontColor1", JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR1_NAME);
     private final ColorProperty fontColor2 = new ColorProperty( "fontColor2", JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR2_NAME );
+    private Color statusColor = new Color(87, 89, 89, 255);
     private DrawnString dsStatus = null;
     private DrawnString[] dsPos = null;
     private DrawnString[] dsName = null;
@@ -279,23 +280,18 @@ public class timingtower extends Widget
         if(isEditorMode)
             shownData = 0;
         
-        Color statusColor = new Color(87, 89, 89, 255);
-        
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
-		{
-			statusColor = new Color(64, 240, 240, 255);
-			forceCompleteRedraw(true);
-		}
-		else if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
-		{
-			statusColor = new Color(255, 255, 255, 255);
-			forceCompleteRedraw(true);
-		}
-		else if (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
-		{
-			statusColor = new Color(0, 240, 40);
-			forceCompleteRedraw(true);
-		}
+//        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
+//		{
+//			statusColor = new Color(64, 240, 240, 255);
+//		}
+//		else if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
+//		{
+//			statusColor = new Color(255, 255, 255, 255);
+//		}
+//		else if (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
+//		{
+//			statusColor = new Color(0, 240, 40);
+//		}
         texture.clear(statusColor, offsetX, offsetY, rowHeight+fw2, rowHeight, false, null);
         texture.clear(statusColor, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY, imgPos.getTexture().getWidth(), rowHeight, false, null);
         
@@ -347,7 +343,7 @@ public class timingtower extends Widget
             int drawncars = Math.min( scoringInfo.getNumVehicles(), numVeh.getValue() );
             short posOffset = 0; // the top position that should be drawn on screen (0-indexed)
             
-            String status = "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps());
+            String status = "FORMATION LAP"; //this doesn't work because it's immediately overridden by code further down, but whatever
             if (scoringInfo.getGamePhase() == GamePhase.FORMATION_LAP || scoringInfo.getGamePhase() == GamePhase.BEFORE_SESSION_HAS_BEGUN || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() < 1)
             {
             	status = "FORMATION LAP";
@@ -356,15 +352,29 @@ public class timingtower extends Widget
             {
             	status = "FINISH";
             }
+            else
+            {
+            	status = "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps());
+            }
             
             Color statusFontColor = fontColor2.getColor();
             if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
 			{
+            	statusColor = new Color(64, 240, 240, 255);
             	statusFontColor = Color.BLACK;
+            	forceCompleteRedraw(true); //is this necessary?
 			}
+            if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
+            {
+            	statusColor = new Color(255, 255, 255, 255);
+            	statusFontColor = Color.BLACK;
+            	forceCompleteRedraw(true);
+            }
+          //add some code for when it goes to green flag after yellow (think this through later)
             else
             {
-            	statusFontColor = fontColor2.getColor();
+            	statusColor = new Color(87, 89, 89, 255);
+            	forceCompleteRedraw(true);
             }
             if (String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit()) == "LAPS")
             {

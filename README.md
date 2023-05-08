@@ -1,10 +1,10 @@
 # FISA-rFDynHUD
-This is a repository for some new widgets for rFDynHUD that I created for FISA broadcasts.
-I don't expect anyone to contribute to this, but if you have knowledge of rFDynHUD or Java in general then feel free.
+This is a repository for some new widgets for rFDynHUD that I created for FISA broadcasts.\
+I don't expect anyone to contribute to this, but if you have knowledge of rFDynHUD or Java in general then feel free.\
 The code in here probably sucks, but at least it does (more or less) what it's supposed to do. I'm not that great at Java.
 
 ## Licensing information
-Look, I didn't really know what licence to pick, so I went with this GAPL whatever licence because I want this shit to be open-source, but I also want you to mention me whenever you use or change my code. (Actually I was looking for something like CC-BY, but it wasn't available.)
+Look, I didn't really know what licence to pick, so I went with this GAPL whatever licence because I want this shit to be open-source, but I also want you to mention me whenever you use or change my code. (Actually I was looking for something like CC-BY, but it wasn't available.)\
 So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in any way, even commercially if you want for all I care, PROVIDED THAT:
 * you mention that this code is ©, and was originally written by, J.A. Brown;
 * you mention that it is freely available at this GitHub (link to it: https://github.com/MAHADEV-J/FISA-rFDynHUD);
@@ -12,16 +12,21 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 * you distribute it in an OPEN-SOURCE way, i.e. you always include the full source code in your distribution.
 
 ## Known bugs
-The gap to leader in the timing tower widget only updates once per sector - EXCEPT on the formation lap, where it updates constantly. Updating constantly is what I want it to do. But it seems that this is possibly how the rFactor API works.
+* The gap to leader in the timing tower widget only updates once per sector - EXCEPT on the formation lap, where it updates constantly. Updating constantly is what I want it to do. But it seems that this is possibly how the rFactor API works.
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Create a session status (which lap it is, etc.) part of the timing tower widget.
+* Make the session status row of the timing tower widget display the correct background and font colour (different colours for yellow, green, white flag, etc.)
+* Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Make it so that the timing tower can display how many pit stops a car has made.
 * Make it so that the timing tower can display whether a car is in the pits.
 * Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)
 
 ## Changelog
+
+* Branch "sessionstatus": added a row for session status to the widget.
+
+### old changes below
 Previously, all these changes were stored as comments in the file timingtower.java. I'm adding them all to this readme so I can remove them from there. It was about time I added version control as a better way to track changes.
 
 * 20230320 1506: removed references to visible time and visible end

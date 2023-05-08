@@ -273,13 +273,31 @@ public class timingtower extends Widget
         ScoringInfo scoringInfo = gameData.getScoringInfo();
         int maxNumItems = numVeh.getValue();
         int rowHeight = height / maxNumItems;
+        int fw2 = Math.round(width * 0.38f);
         int drawncars = Math.min( scoringInfo.getNumVehicles(), maxNumItems );
         short posOffset;
         if(isEditorMode)
             shownData = 0;
         
-        texture.clear(imgPos.getTexture(), offsetX, offsetY, false, null);
-        texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY, true, null );
+        Color statusColor = new Color(87, 89, 89, 255);
+        
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
+		{
+			statusColor = new Color(64, 240, 240, 255);
+			forceCompleteRedraw(true);
+		}
+		else if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
+		{
+			statusColor = new Color(255, 255, 255, 255);
+			forceCompleteRedraw(true);
+		}
+		else if (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
+		{
+			statusColor = new Color(0, 240, 40);
+			forceCompleteRedraw(true);
+		}
+        texture.clear(statusColor, offsetX, offsetY, rowHeight+fw2, rowHeight, false, null);
+        texture.clear(statusColor, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY, imgPos.getTexture().getWidth(), rowHeight, false, null);
         
         for(int i=0;i < drawncars;i++)
         {
@@ -339,9 +357,18 @@ public class timingtower extends Widget
             	status = "FINISH";
             }
             
+            Color statusFontColor = fontColor2.getColor();
+            if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
+			{
+            	statusFontColor = Color.BLACK;
+			}
+            else
+            {
+            	statusFontColor = fontColor2.getColor();
+            }
             if (String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit()) == "LAPS")
             {
-            	dsStatus.draw(offsetX, offsetY, status, texture);
+            	dsStatus.draw(offsetX, offsetY, status, statusFontColor, texture);
             }
             for(int i=0;i < drawncars;i++)
             { 

@@ -36,55 +36,6 @@ import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_gr
  * 
  */
 
-
-//20230320 1506: removed references to visible time and visible end
-//20230320 1514: changed updateVisibility function to always loop through cars
-//20230320 1522: removed references to random multiplier
-//20230320 1528: changed background images
-//20230320 1530: tried to remove positions gained/lost indicator graphic (using comments, for testing purposes)
-//20230327 1353: added gap to leader; set "data" to 0 everywhere
-//20230327 1406: added gap for lapped cars (not tested yet)
-//20230327 1411: added gap for retired cars (not tested yet)
-//20230403 1138: changed positions array to array of IntValues instead of short numbers
-//20230403 1201: added call to FillArrayValues in drawWidget
-//20230403 1218: removed call to FillArrayValues from there again and moved it to UpdateVisibility (l. 276)
-//20230403 1229: replaced one call to FillArrayValues from UpdateVisibility with code from Marvin's timing tower
-//20230403 1239: changed conditions in UpdateVisibility and removed call to forceCompleteRedraw in drawWidget
-//20230403 1246: turned call to FillArrayValues in UpdateVisiblity back on
-//20230403 1447: created an extra check in UpdateVisibility that basically duplicates what FillArrayValues already does 
-//20230403 1807: IT WORKS, THAT LAST THING MADE IT WORK; corrected string values
-//20230403 1820: limited amount of cars shown to 20 (did not work)
-//20230403 1824: created extra makeshift variable that should cause only first 20 cars to be shown (l. 282)
-//20230501 1421: last solution didn't work; instead changed FillArrayValues function to show only first 20 cars (l. 172)
-//20230507 0922: last solution didn't work either; instead changed posOffset value in DrawWidget to (l. 374)
-//20230507 1005: that worked; changed loop in FillArrayValues back to how it was before; changed FillArrayVAlues and DrawWidget to hopefully show leader all the time and update whenever gaps change
-//20230507 1005: now it seems to update positions only when there's an overtake and gaps only once a lap
-//20230507 1022: changed updateVisibility to hopefully update gaps all the time too
-//20230507 1033: that didn't work; added l. 320 to hopefully force leader gap to be shown as "Leader"
-//20230507 1045: that worked; changed gap changed update logic in updateVisibility
-//20230507 1051: that didn't work; removed carsOnLeadLap check in updateVisibility
-//20230507 1450: didn't work either; changed updateVisibility again using a seemingly unnecessary boolean check
-//20230507 1518: nope; added debugging string on l. 240
-//20230507 1524: tried again on l. 317
-//20230507 1531: copied code from FillArrayValues to updateVisibility
-//20230507 1535: commented out gap update code from FillArrayValues
-//20230507 1535: this didn't work and it's now also broken in editor mode, so reverted last change
-//20230507 1543: removed unnecessary boolean in updateVisibility; also commented out call to ClearArrayValues
-//20230507 1546: now it's completely invisible, so reverted last change
-//20230507 1548: added call to ClearArrayValues in another place (l. 343)
-//20230507 1822: added debugging info
-//20230507 1822: removed debugging info again; the problem was NOT the call to FillArrayValues
-//20230507 1830: changed current lap number on l. 278
-//20230507 1902: changed current lap number back; commented out forceCompleteRedraw and FillArrayValues in updateVisibility
-//20230507 1916: reverted last change
-//20230507 1942: changed getLapsCompleted to getCurrentLap in updateVisibility (l. 278)
-//20230507 1946: works the same
-//20230507 2114: commented out a lot of code in UpdateVisibility in an attempt to make lap 1+ more like formation lap
-//20230508 0846: commented out even more code in UpdateVisibility and added call to FillArrayValues in DrawWidget
-//20230508 0852: made a small adjustment to DrawWidget
-//20230508 0859: made some more small adjustments to DrawWidget and UpdateVisibility
-//20230508 0938: uploaded all this crap to GitHub
-
 public class timingtower extends Widget
 {
     private TextureImage2D texGainedPlaces = null;
@@ -95,6 +46,7 @@ public class timingtower extends Widget
     private final ImagePropertyWithTexture imgNeutral = new ImagePropertyWithTexture( "imgTime", "prunn/f1_2011/tower/bg_gap.png" );
     private final ColorProperty fontColor1 = new ColorProperty("fontColor1", JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR1_NAME);
     private final ColorProperty fontColor2 = new ColorProperty( "fontColor2", JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR2_NAME );
+    private DrawnString dsStatus = null;
     private DrawnString[] dsPos = null;
     private DrawnString[] dsName = null;
     private DrawnString[] dsTime = null;
@@ -159,6 +111,8 @@ public class timingtower extends Widget
         
         int top = ( rowHeight - fh ) / 2;
         
+        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+64 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
+        top += rowHeight;
         for(int i=0;i < maxNumItems;i++)
         { 
             dsPos[i] = drawnStringFactory.newDrawnString( "dsPos", rowHeight/2 + 5 + fontxposoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
@@ -278,9 +232,6 @@ public class timingtower extends Widget
         super.updateVisibility( gameData, isEditorMode );
         
         ScoringInfo scoringInfo = gameData.getScoringInfo();
-//commented out 20230508 0842        
-//        if ( !startedPositionsInitialized )
-//            initStartedFromPositions( scoringInfo );
         
         currentLap.update( scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() );
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
@@ -306,63 +257,6 @@ public class timingtower extends Widget
 //            
 //        }
         
-//commented out 20230508 0841
-//        //how many on the same lap?
-//        int onlap = 0;
-//        for(int j=0;j < scoringInfo.getNumVehicles(); j++)
-//        {
-//            if(scoringInfo.getVehicleScoringInfo( j ).getLapsCompleted() == scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() )
-//                onlap++;
-//        }
-//            
-//        carsOnLeadLap.update( onlap );
-//        onlap = 20;
-//        for( int j = 0; j < scoringInfo.getNumVehicles(); j++ )
-//        {
-//        	VehicleScoringInfo vsi = scoringInfo.getVehicleScoringInfo(j);
-//        	
-//	        //if (carsOnLeadLap.hasChanged() && !isEditorMode )
-//	        //{
-//	        //    FillArrayValues( onlap, scoringInfo, shownData, false, gameData);
-//	        //    forceCompleteRedraw( true );
-//	        //}
-//	        
-//	        positions[j].update(vsi.getPlace(false));
-//	        names[j].update(vsi.getDriverNameTLC());
-//	        gaps[j].update("+" + Float.toString(vsi.getTimeBehindLeader(false)));
-//	        DecimalFormat decimalFormat = new DecimalFormat("0.000");
-//    		decimalFormat.setRoundingMode(RoundingMode.DOWN);
-//	        gaps[j].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false ))))) ;
-//	        if(gaps[j].getValue() == "+0.000")
-//    		{
-//    			gaps[j].update("Leader");
-//    		}
-//	        if(vsi.getLapsBehindLeader(false) > 0)
-//            {
-//            	if(vsi.getLapsBehindLeader(false) == 1)
-//            	{
-//            		gaps[j].update("+1 LAP");
-//            	}
-//            	else
-//            	{
-//            		gaps[j].update("+" + String.valueOf(vsi.getLapsBehindLeader(false)) + " LAPS");
-//            	}
-//            }
-//            if(vsi.getFinishStatus() == FinishStatus.DNF)
-//            {
-//            	positions[j].update(-1);
-//            	gaps[j].update("OUT");
-//            }
-//	        if (positions[j].hasChanged() || names[j].hasChanged() || gaps[j].hasChanged() && ! isEditorMode )
-//	        {
-//	        	//commented out 20230507 1948
-//	        	//clearArrayValues(scoringInfo.getNumVehicles());
-//	        	//FillArrayValues( onlap, scoringInfo, shownData, false, gameData);
-//	        	//forceCompleteRedraw( true );
-//	        }
-//	        gaps[0].update("Leader");
-//	        
-//        }
         return true;
         
         
@@ -380,14 +274,17 @@ public class timingtower extends Widget
         if(isEditorMode)
             shownData = 0;
         
+        texture.clear(imgPos.getTexture(), offsetX, offsetY, false, null);
+        texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY, true, null );
+        
         for(int i=0;i < drawncars;i++)
         {
             if(positions[i].getValue() != -1 || isEditorMode)
             {
                 if(i==0)
-                    texture.clear( imgPosFirst.getTexture(), offsetX, offsetY+rowHeight*i, false, null );
+                    texture.clear( imgPosFirst.getTexture(), offsetX, offsetY+rowHeight*(i+1), false, null );
                 else
-                    texture.clear( imgPos.getTexture(), offsetX, offsetY+rowHeight*i, false, null );
+                    texture.clear( imgPos.getTexture(), offsetX, offsetY+rowHeight*(i+1), false, null );
             
             
                 if( shownData == 0)
@@ -408,7 +305,7 @@ public class timingtower extends Widget
                         else
                             texGainedPlaces = imgNeutral.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
                     
-                    texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*i, true, null );
+                    texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*(i+1), true, null );
                     
                     
                 }
@@ -422,17 +319,16 @@ public class timingtower extends Widget
     protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
     {
         ScoringInfo scoringInfo = gameData.getScoringInfo();
-        //int onlap = Math.min(20, scoringInfo.getNumVehicles());
-        //clearArrayValues(onlap);
-        //FillArrayValues(onlap, scoringInfo, shownData, false, gameData);
         
         //if ( needsCompleteRedraw || positions[i].hasChanged() )
         //{
-            //int drawncars = Math.min( scoringInfo.getNumVehicles(), numVeh.getValue() );
-        	int drawncars = 20;
-            short posOffset = 0; // the top position that should be drawn on screen
+            int drawncars = Math.min( scoringInfo.getNumVehicles(), numVeh.getValue() );
+            short posOffset = 0; // the top position that should be drawn on screen (0-indexed)
             
-            
+            if (String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit()) == "LAPS")
+            {
+            	dsStatus.draw(offsetX, offsetY, "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps()), texture);
+            }
             for(int i=0;i < drawncars;i++)
             { 
             	if ( needsCompleteRedraw || positions[i].hasChanged() || gaps[i].hasChanged() )

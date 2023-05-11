@@ -11,6 +11,7 @@ import net.ctdp.rfdynhud.gamedata.FinishStatus;
 import net.ctdp.rfdynhud.gamedata.GamePhase;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
+import net.ctdp.rfdynhud.gamedata.SessionLimit;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
 import net.ctdp.rfdynhud.properties.ColorProperty;
 import net.ctdp.rfdynhud.properties.DelayProperty;
@@ -141,18 +142,19 @@ public class timingtower extends Widget
             names[i] = new StringValue();
         }
     }
-    private void FillArrayValues(int onLeaderLap, ScoringInfo scoringInfo, int data, boolean isEditorMode, LiveGameData gameData)
+    private void FillArrayValues(int numToShow, ScoringInfo scoringInfo, int data, boolean isEditorMode, LiveGameData gameData)
     {
+    	
         if(isEditorMode)
         {
             data = 0;
-            onLeaderLap = numVeh.getValue();
+            numToShow = numVeh.getValue();
         }
         int negrand[] = new int[2];
         negrand[0] = 1;
         negrand[1] = -1;
         
-        for(int i=0;i<onLeaderLap;i++)
+        for(int i=0;i<numToShow;i++)
         {
             
             if(positions[i].getValue() == -1)
@@ -163,6 +165,30 @@ public class timingtower extends Widget
                 short place = vsi.getPlace( false );
                 positions[i].update(place);
                 names[i].update(vsi.getDriverNameTLC());
+                gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
+                if(vsi.getLapsBehindLeader(false) == 0 || isEditorMode)
+                {
+                	DecimalFormat decimalFormat = new DecimalFormat("0.000");
+                	decimalFormat.setRoundingMode(RoundingMode.DOWN);
+                    gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
+                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
+                	//{
+                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
+                	//}
+                }
+                //else if(vsi.getLapsBehindLeader(false) != 0)
+                //{
+                	//gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
+                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
+                	//{
+                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
+                	//}
+                //}
+                //if(vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
+                //{
+                	//int something = vsi.getNextInFront(false).getLapsBehindLeader(false) + vsi.getLapsBehindNextInFront(false);
+                	//gaps[i].update(String.valueOf(something));
+                //}
                 
                 switch(data) //0-2-4-gaps 1-place gained
                 {
@@ -191,26 +217,18 @@ public class timingtower extends Widget
                     default: //gaps
                     		DecimalFormat decimalFormat = new DecimalFormat("0.000");
                     		decimalFormat.setRoundingMode(RoundingMode.DOWN);
-                            gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false ))))) ;
-                            if(vsi.getLapsBehindLeader(false) > 0)
-                            {
-                            	if(vsi.getLapsBehindLeader(false) == 1)
-                            	{
-                            		gaps[i].update("+1 LAP");
-                            	}
-                            	else
-                            	{
-                            		gaps[i].update("+" + String.valueOf(vsi.getLapsBehindLeader(false)) + " LAPS");
-                            	}
-                            }
-                    		if(gaps[i].getValue() == "+0.000")
-                    		{
-                    			gaps[i].update("Leader");
-                    		}
                             if(vsi.getFinishStatus() == FinishStatus.DNF)
                             {
                             	gaps[i].update("OUT");
                             }
+                            //else if(vsi.getFinishStatus() == FinishStatus.NONE || vsi.getFinishStatus() == FinishStatus.FINISHED)
+                            //{
+                            	//String lapsBehind = String.valueOf(vsi.getLapsBehindLeader(false));
+                            	//if(lapsBehind == "0")
+                            	//{
+                                    //gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
+                            	//}
+                            //}
                             gaps[0].update("Leader");
                             if(scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
                             {
@@ -238,7 +256,7 @@ public class timingtower extends Widget
         
         ScoringInfo scoringInfo = gameData.getScoringInfo();
         
-        currentLap.update( scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() );
+        //currentLap.update( scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() );
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
         FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, 0, isEditorMode, gameData);
         
@@ -362,7 +380,7 @@ public class timingtower extends Widget
 			{
             	statusColor = new Color(64, 240, 240, 255);
             	statusFontColor = Color.BLACK;
-            	forceCompleteRedraw(true); //is this necessary?
+            	forceCompleteRedraw(true); //apparently this is necessary
 			}
             if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
             {
@@ -370,15 +388,25 @@ public class timingtower extends Widget
             	statusFontColor = Color.BLACK;
             	forceCompleteRedraw(true);
             }
-          //add some code for when it goes to green flag after yellow (think this through later)
-            else
+            if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED)
             {
             	statusColor = new Color(87, 89, 89, 255);
+            	statusFontColor = fontColor2.getColor();
             	forceCompleteRedraw(true);
             }
-            if (String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit()) == "LAPS")
+          //add some code for when it goes to green flag after yellow (think this through later)
+            if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
+            {
+            	statusColor = new Color(240, 20, 20, 255);
+            	forceCompleteRedraw(true);
+            }
+            if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS)
             {
             	dsStatus.draw(offsetX, offsetY, status, statusFontColor, texture);
+            }
+            if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.TIME || scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS && scoringInfo.getEstimatedMaxLaps(scoringInfo.getLeadersVehicleScoringInfo()) < scoringInfo.getMaxLaps())
+            {
+            	//show time remaining
             }
             for(int i=0;i < drawncars;i++)
             { 
@@ -388,7 +416,7 @@ public class timingtower extends Widget
             			//posOffset = (short)( carsOnLeadLap.getValue() - numVeh.getValue() );
             		//else
             			//posOffset = 0;
-                
+            		
             		if(positions[i + posOffset].getValue() != -1)
             			dsPos[i].draw( offsetX, offsetY, String.valueOf(positions[i + posOffset]), texture );
             		else
@@ -400,6 +428,7 @@ public class timingtower extends Widget
             			GainedFontColor = fontColor1;
                 
             		dsName[i].draw( offsetX, offsetY, names[i + posOffset].getValue(), texture );
+            		                    
             		dsTime[i].draw( offsetX, offsetY, gaps[i + posOffset].getValue(), GainedFontColor.getColor(), texture );
                 }
             }

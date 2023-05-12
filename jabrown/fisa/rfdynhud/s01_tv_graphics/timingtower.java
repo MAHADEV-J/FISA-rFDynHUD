@@ -142,7 +142,7 @@ public class timingtower extends Widget
             gainedPlaces[i] = 0;
             gaps[i] = new StringValue();
             names[i] = new StringValue();
-            lapsDown[i] = 0;
+            lapsDown[i] = 0; //reset to 0 every time to prevent problems in case cars unlap themselves
         }
     }
     private void FillArrayValues(int numToShow, ScoringInfo scoringInfo, int data, boolean isEditorMode, LiveGameData gameData)
@@ -174,10 +174,44 @@ public class timingtower extends Widget
                 	DecimalFormat decimalFormat = new DecimalFormat("0.000");
                 	decimalFormat.setRoundingMode(RoundingMode.DOWN);
                     gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
-                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                	//{
-                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
-                	//}
+                }
+                
+                //The following loop deals with cars being lapped. It's a workaround for the bug in rFDynHUD's code.
+                //It doesn't work 100% of the time (often it will show numbers of laps down that are too low),
+                //but at least it gets rid of the ugly "+0.000". It also gets rid of the weirdness of showing
+                //a car that is behind a lapped car as being fewer laps down than the car it is behind.
+                //--------------------------------------------------------------------------------------------------
+                if(vsi.getPlace(false) != 1) //necessary to avoid problems when checking the car in front
+                {
+                	//for cases where cars get lapped for the first time:
+                	if(lapsDown[i] == 0)
+                	{
+                		if(vsi.getTimeBehindLeader(false) == 0)
+                		{
+                			lapsDown[i] = 1;
+                		}
+                	}
+                	//for all subsequent cases:
+                	if(vsi.getLapsBehindLeader(false) != 0) //check if this is the first car to be lapped
+                	{
+                		lapsDown[i] = (short)vsi.getLapsBehindLeader(false);
+                	}
+                	if(vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
+                	{
+                		//add the laps down of the next car in front:
+                		lapsDown[i] = (short)(lapsDown[i-1] + vsi.getLapsBehindNextInFront(false));
+                	}
+                	if(lapsDown[i] != 0)
+                	{
+                		if(lapsDown[i] == 1)
+                		{
+                			gaps[i].update("+1 LAP");
+                		}
+                		else
+                		{
+                			gaps[i].update("+" + String.valueOf(lapsDown[i]) + " LAPS");
+                		}
+                	}
                 }
                 //else if(vsi.getLapsBehindLeader(false) != 0)
                 //{

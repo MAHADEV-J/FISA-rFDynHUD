@@ -67,6 +67,7 @@ public class timingtower extends Widget
     private short[] gainedPlaces = null;
     private StringValue[] names = null;
     private StringValue[] gaps = null;
+    private short[] lapsdown = null;
     private ColorProperty GainedFontColor;
     
    
@@ -140,6 +141,7 @@ public class timingtower extends Widget
             gainedPlaces[i] = 0;
             gaps[i] = new StringValue();
             names[i] = new StringValue();
+            lapsdown[i] = 0;
         }
     }
     private void FillArrayValues(int numToShow, ScoringInfo scoringInfo, int data, boolean isEditorMode, LiveGameData gameData)
@@ -165,30 +167,39 @@ public class timingtower extends Widget
                 short place = vsi.getPlace( false );
                 positions[i].update(place);
                 names[i].update(vsi.getDriverNameTLC());
-                gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
-                if(vsi.getLapsBehindLeader(false) == 0 || isEditorMode)
-                {
-                	DecimalFormat decimalFormat = new DecimalFormat("0.000");
-                	decimalFormat.setRoundingMode(RoundingMode.DOWN);
-                    gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
-                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                	//{
-                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
-                	//}
-                }
-                //else if(vsi.getLapsBehindLeader(false) != 0)
-                //{
-                	//gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
-                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                	//{
-                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
-                	//}
-                //}
-                //if(vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                //{
-                	//int something = vsi.getNextInFront(false).getLapsBehindLeader(false) + vsi.getLapsBehindNextInFront(false);
-                	//gaps[i].update(String.valueOf(something));
-                //}
+            	DecimalFormat decimalFormat = new DecimalFormat("0.000");
+            	decimalFormat.setRoundingMode(RoundingMode.DOWN);
+                gaps[i].update("HELLO");
+                if (vsi.getPlace(false) != 1)
+				{
+                	gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
+					//if (lapsdown[i] == 0)
+					//{
+						//if (vsi.getTimeBehindLeader(false) == 0)
+						//{
+							//lapsdown[i] = 1;
+						//}
+					//}
+					//if (vsi.getLapsBehindLeader(false) != 0)
+					//{
+						//lapsdown[i] = (short)vsi.getLapsBehindLeader(false);
+					//}
+					//if (vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
+					//{
+						//lapsdown[i] = (short)(lapsdown[i-1] + vsi.getLapsBehindNextInFront(false));
+					//}
+					//if (lapsdown[i] != 0)
+					//{
+						//if (lapsdown[i] == 1)
+						//{
+							//gaps[i].update("+1 LAP");
+						//}
+						//else
+						//{
+							//gaps[i].update("+" + String.valueOf(lapsdown[i]) + " LAPS");
+						//}
+					//}
+				}
                 
                 switch(data) //0-2-4-gaps 1-place gained
                 {
@@ -215,8 +226,6 @@ public class timingtower extends Widget
                             }
                             break;
                     default: //gaps
-                    		DecimalFormat decimalFormat = new DecimalFormat("0.000");
-                    		decimalFormat.setRoundingMode(RoundingMode.DOWN);
                             if(vsi.getFinishStatus() == FinishStatus.DNF)
                             {
                             	gaps[i].update("OUT");

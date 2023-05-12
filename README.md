@@ -13,11 +13,13 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 
 ## Known bugs
 * The gap to leader in the timing tower widget only updates once per sector - EXCEPT on the formation lap, where it updates constantly. Updating constantly is what I want it to do. But it seems that this is possibly how the rFactor API works.
+* For lapped cars, the number of laps they are down is not always shown correctly. Most of the time it's too low. This is because of a bug in the code of rFDynHUD itself. This is the best I could do to make a workaround for that bug. My only hope of getting it to show correctly now is to look into the code of some of Ákos Fődi's F1 TV graphics widget sets to see if there's a solution in there that will make it work. But I'm not counting on it.\
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Make the session status row of the timing tower widget display the correct background and font colour (different colours for yellow, green, white flag, etc.)
+* Test if the session status row colour change works correctly for yellow flags
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
+* Make it so that the session status row briefly turns green at every green flag (low priority)
 * Make it so that the timing tower can display how many pit stops a car has made.
 * Make it so that the timing tower can display whether a car is in the pits.
 * Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)

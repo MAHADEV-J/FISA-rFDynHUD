@@ -415,7 +415,7 @@ public class timingtower extends Widget
             Color statusFontColor = fontColor2.getColor();
             if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
 			{
-            	statusColor = new Color(64, 240, 240, 255);
+            	statusColor = new Color(252, 181, 3, 255);
             	statusFontColor = Color.BLACK;
             	forceCompleteRedraw(true); //apparently this is necessary
 			}
@@ -425,16 +425,16 @@ public class timingtower extends Widget
             	statusFontColor = Color.BLACK;
             	forceCompleteRedraw(true);
             }
-            if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED)
+            else
             {
             	statusColor = new Color(87, 89, 89, 255);
             	statusFontColor = fontColor2.getColor();
             	forceCompleteRedraw(true);
             }
-          //add some code for when it goes to green flag after yellow (think this through later)
+          //add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
             if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
             {
-            	statusColor = new Color(240, 20, 20, 255);
+            	statusColor = new Color(161, 9, 11, 255);
             	forceCompleteRedraw(true);
             }
             if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS)

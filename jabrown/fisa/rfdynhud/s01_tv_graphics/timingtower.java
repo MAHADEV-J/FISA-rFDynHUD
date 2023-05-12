@@ -67,6 +67,7 @@ public class timingtower extends Widget
     private short[] gainedPlaces = null;
     private StringValue[] names = null;
     private StringValue[] gaps = null;
+    private short[] lapsDown = null;
     private ColorProperty GainedFontColor;
     
    
@@ -132,6 +133,7 @@ public class timingtower extends Widget
         gainedPlaces = new short[maxNumCars];
         gaps = new StringValue[maxNumCars];
         names = new StringValue[maxNumCars];
+        lapsDown = new short[maxNumCars];
         
         for(int i=0;i<maxNumCars;i++)
         {
@@ -140,6 +142,7 @@ public class timingtower extends Widget
             gainedPlaces[i] = 0;
             gaps[i] = new StringValue();
             names[i] = new StringValue();
+            lapsDown[i] = 0;
         }
     }
     private void FillArrayValues(int numToShow, ScoringInfo scoringInfo, int data, boolean isEditorMode, LiveGameData gameData)

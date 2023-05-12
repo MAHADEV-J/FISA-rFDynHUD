@@ -196,7 +196,7 @@ public class timingtower extends Widget
                 	{
                 		lapsDown[i] = (short)vsi.getLapsBehindLeader(false);
                 	}
-                	if(vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
+                	if(lapsDown[i-1] != 0)
                 	{
                 		//add the laps down of the next car in front:
                 		lapsDown[i] = (short)(lapsDown[i-1] + vsi.getLapsBehindNextInFront(false));

@@ -100,7 +100,7 @@ public class timingtower extends Widget
         dsTime = new DrawnString[maxNumItems];
                 
         int fh = TextureImage2D.getStringHeight( "0%C", getFontProperty() );
-        int rowHeight = height / maxNumItems;
+        int rowHeight = fh + 2; //makes the row height dependent on the font height
         int fw2 = Math.round(width * 0.38f);
         //int fw3 = width - rowHeight - fw2;
         //int fw3b = fw3 * 3 / 4;
@@ -360,7 +360,8 @@ public class timingtower extends Widget
         
         ScoringInfo scoringInfo = gameData.getScoringInfo();
         int maxNumItems = numVeh.getValue();
-        int rowHeight = height / maxNumItems;
+        int fh = TextureImage2D.getStringHeight( "0%C", getFontProperty() );
+        int rowHeight = fh + 2; //makes the row height dependent on the font height
         int fw2 = Math.round(width * 0.38f);
         int drawncars = Math.min( scoringInfo.getNumVehicles(), maxNumItems );
         short posOffset;

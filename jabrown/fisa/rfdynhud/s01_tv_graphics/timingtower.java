@@ -13,6 +13,8 @@ import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.SessionLimit;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
+import net.ctdp.rfdynhud.gamedata.VehicleState;
+import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.ColorProperty;
 import net.ctdp.rfdynhud.properties.DelayProperty;
 import net.ctdp.rfdynhud.properties.ImagePropertyWithTexture;
@@ -59,7 +61,7 @@ public class timingtower extends Widget
     private final IntProperty numVeh = new IntProperty( "numberOfVehicles", 20 );
     private int[] startedPositions = null;
     private final IntValue currentLap = new IntValue();
-    private short shownData = 0; //0-2-4-gaps 1-place gained
+    private short shownData = 0; //0-4-gaps 1-place gained 2-pit stops
     private final IntValue drawnCars = new IntValue();
     private final IntValue carsOnLeadLap = new IntValue();
     private boolean startedPositionsInitialized = false;
@@ -69,7 +71,7 @@ public class timingtower extends Widget
     private StringValue[] gaps = null;
     private short[] lapsDown = null;
     private ColorProperty GainedFontColor;
-    
+    private static final InputAction ToggleGapsOrStops = new InputAction ("ToggleGapsOrStops", false); //defines an input action
    
     @Override
     public void onRealtimeEntered( LiveGameData gameData, boolean isEditorMode )
@@ -169,65 +171,8 @@ public class timingtower extends Widget
                 positions[i].update(place);
                 names[i].update(vsi.getDriverNameTLC());
                 gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
-                if(vsi.getLapsBehindLeader(false) == 0 || isEditorMode)
-                {
-                	DecimalFormat decimalFormat = new DecimalFormat("0.000");
-                	decimalFormat.setRoundingMode(RoundingMode.DOWN);
-                    gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
-                }
                 
-                //The following loop deals with cars being lapped. It's a workaround for the bug in rFDynHUD's code.
-                //It doesn't work 100% of the time (often it will show numbers of laps down that are too low),
-                //but at least it gets rid of the ugly "+0.000". It also gets rid of the weirdness of showing
-                //a car that is behind a lapped car as being fewer laps down than the car it is behind.
-                //--------------------------------------------------------------------------------------------------
-                if(vsi.getPlace(false) != 1) //necessary to avoid problems when checking the car in front
-                {
-                	//for cases where cars get lapped for the first time:
-                	if(lapsDown[i] == 0)
-                	{
-                		if(vsi.getTimeBehindLeader(false) == 0)
-                		{
-                			lapsDown[i] = 1;
-                		}
-                	}
-                	//for all subsequent cases:
-                	if(vsi.getLapsBehindLeader(false) != 0) //check if this is the first car to be lapped
-                	{
-                		lapsDown[i] = (short)vsi.getLapsBehindLeader(false);
-                	}
-                	if(lapsDown[i-1] != 0)
-                	{
-                		//add the laps down of the next car in front:
-                		lapsDown[i] = (short)(lapsDown[i-1] + vsi.getLapsBehindNextInFront(false));
-                	}
-                	if(lapsDown[i] != 0)
-                	{
-                		if(lapsDown[i] == 1)
-                		{
-                			gaps[i].update("+1 LAP");
-                		}
-                		else
-                		{
-                			gaps[i].update("+" + String.valueOf(lapsDown[i]) + " LAPS");
-                		}
-                	}
-                }
-                //else if(vsi.getLapsBehindLeader(false) != 0)
-                //{
-                	//gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
-                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                	//{
-                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
-                	//}
-                //}
-                //if(vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                //{
-                	//int something = vsi.getNextInFront(false).getLapsBehindLeader(false) + vsi.getLapsBehindNextInFront(false);
-                	//gaps[i].update(String.valueOf(something));
-                //}
-                
-                switch(data) //0-2-4-gaps 1-place gained
+                switch(data) //0-4-gaps 1-place gained 2-pit stops
                 {
                     case 1: //places
                             int startedfrom=0;
@@ -251,21 +196,75 @@ public class timingtower extends Widget
                                 gaps[i].update(String.valueOf( Math.abs( startedfrom - vsi.getPlace( false )) ) + "    ");
                             }
                             break;
+                    case 2: //number of pit stops
+                    	if(vsi.getNumPitstopsMade() == 1)
+                    	{
+                    		gaps[i].update("1 STOP");
+                    	}
+                    	else
+                    	{
+                    		gaps[i].update(String.valueOf(vsi.getNumPitstopsMade()) + " STOPS");	
+                    	}
+                    	break;
                     default: //gaps
-                    		DecimalFormat decimalFormat = new DecimalFormat("0.000");
-                    		decimalFormat.setRoundingMode(RoundingMode.DOWN);
                             if(vsi.getFinishStatus() == FinishStatus.DNF)
                             {
                             	gaps[i].update("OUT");
                             }
-                            //else if(vsi.getFinishStatus() == FinishStatus.NONE || vsi.getFinishStatus() == FinishStatus.FINISHED)
-                            //{
-                            	//String lapsBehind = String.valueOf(vsi.getLapsBehindLeader(false));
-                            	//if(lapsBehind == "0")
-                            	//{
-                                    //gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
-                            	//}
-                            //}
+                            if(vsi.getLapsBehindLeader(false) == 0 || isEditorMode)
+                            {
+                            	DecimalFormat decimalFormat = new DecimalFormat("0.000");
+                            	decimalFormat.setRoundingMode(RoundingMode.DOWN);
+                                gaps[i].update("+" + String.valueOf(decimalFormat.format(Math.abs( vsi.getTimeBehindLeader( false )))));
+                            }
+                            
+                            //The following loop deals with cars being lapped. It's a workaround for the bug in rFDynHUD's code.
+                            //It doesn't work 100% of the time (often it will show numbers of laps down that are too low),
+                            //but at least it gets rid of the ugly "+0.000". It also gets rid of the weirdness of showing
+                            //a car that is behind a lapped car as being fewer laps down than the car it is behind.
+                            //--------------------------------------------------------------------------------------------------
+                            if(vsi.getPlace(false) != 1) //necessary to avoid problems when checking the car in front
+                            {
+                            	//for cases where cars get lapped for the first time:
+                            	if(lapsDown[i] == 0)
+                            	{
+                            		if(vsi.getTimeBehindLeader(false) == 0)
+                            		{
+                            			lapsDown[i] = 1;
+                            		}
+                            	}
+                            	//for all subsequent cases:
+                            	if(vsi.getLapsBehindLeader(false) != 0) //check if this is the first car to be lapped
+                            	{
+                            		lapsDown[i] = (short)vsi.getLapsBehindLeader(false);
+                            	}
+                            	if(lapsDown[i-1] != 0)
+                            	{
+                            		//add the laps down of the next car in front:
+                            		lapsDown[i] = (short)(lapsDown[i-1] + vsi.getLapsBehindNextInFront(false));
+                            	}
+                            	if(lapsDown[i] != 0)
+                            	{
+                            		if(lapsDown[i] == 1)
+                            		{
+                            			gaps[i].update("+1 LAP");
+                            		}
+                            		else
+                            		{
+                            			gaps[i].update("+" + String.valueOf(lapsDown[i]) + " LAPS");
+                            		}
+                            	}
+                            }
+                            
+                            //another loop to show when a car is in the pits
+                            if (VehicleState.get(vsi, 0).isInPitlane())
+                            {
+                            	gaps[i].update("IN PIT");
+                            }
+                            if (VehicleState.get(vsi, 0).isPitting())
+                            {
+                            	gaps[i].update("PIT STOP");
+                            }
                             gaps[0].update("Leader");
                             if(scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
                             {
@@ -287,6 +286,39 @@ public class timingtower extends Widget
     }
     
     @Override
+    public InputAction[] getInputActions()
+    {
+    	//Registers this action as an action that a key input can be bound to.
+    	return (new InputAction[] {ToggleGapsOrStops});
+    }
+    
+    @Override
+    public Boolean onBoundInputStateChanged(InputAction action, boolean state, int modifierMask, long when, LiveGameData gameData, boolean isEditorMode)
+    {
+    	Boolean result = super.onBoundInputStateChanged(action, state, modifierMask, when, gameData, isEditorMode);
+    	
+    	if(action == ToggleGapsOrStops)
+    	{
+    			ToggleGapsOrStops();
+    	}
+    	
+    	return result;
+    }
+    
+    public void ToggleGapsOrStops()
+    {
+    	//Toggles between gaps and pitstops.
+		if(shownData == 0)
+    	{
+    		shownData = 2;
+    	}
+    	else
+    	{
+    		shownData = 0;
+    	}
+    }
+    
+    @Override
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
         super.updateVisibility( gameData, isEditorMode );
@@ -295,7 +327,7 @@ public class timingtower extends Widget
         
         //currentLap.update( scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() );
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
-        FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, 0, isEditorMode, gameData);
+        FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
         
         //commented out 20230507 1947
 //        if( currentLap.hasChanged() && currentLap.getValue() > -1 || isEditorMode)
@@ -360,28 +392,28 @@ public class timingtower extends Widget
                     texture.clear( imgPos.getTexture(), offsetX, offsetY+rowHeight*(i+1), false, null );
             
             
-                if( shownData == 0)
-                {
+                //if( shownData == 0)
+                //{
                      
-                    if(carsOnLeadLap.getValue() > numVeh.getValue() && i != 0)
-                        posOffset = (short)( carsOnLeadLap.getValue() - numVeh.getValue() );
-                    else
-                        posOffset = 0;
+                    //if(carsOnLeadLap.getValue() > numVeh.getValue() && i != 0)
+                        //posOffset = (short)( carsOnLeadLap.getValue() - numVeh.getValue() );
+                    //else
+                        //posOffset = 0;
                     
                         
                     
-                    if(gainedPlaces[i + posOffset] > 0)
-                        texGainedPlaces = imgPositive.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
-                    else 
-                        if(gainedPlaces[i + posOffset] < 0)
-                            texGainedPlaces = imgNegative.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
-                        else
+                    //if(gainedPlaces[i + posOffset] > 0)
+                        //texGainedPlaces = imgPositive.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
+                    //else 
+                        //if(gainedPlaces[i + posOffset] < 0)
+                            //texGainedPlaces = imgNegative.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
+                        //else
                             texGainedPlaces = imgNeutral.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
                     
                     texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*(i+1), true, null );
                     
                     
-                }
+                //}
             }
         }
         

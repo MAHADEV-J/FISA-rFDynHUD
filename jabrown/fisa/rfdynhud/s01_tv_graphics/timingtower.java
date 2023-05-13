@@ -13,6 +13,7 @@ import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.SessionLimit;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
+import net.ctdp.rfdynhud.gamedata.VehicleState;
 import net.ctdp.rfdynhud.properties.ColorProperty;
 import net.ctdp.rfdynhud.properties.DelayProperty;
 import net.ctdp.rfdynhud.properties.ImagePropertyWithTexture;
@@ -215,9 +216,13 @@ public class timingtower extends Widget
                 }
                 
                 //another loop to show when a car is in the pits
-                if (vsi.isInPits() == true)
+                if (VehicleState.get(vsi, 0).isInPitlane())
                 {
                 	gaps[i].update("IN PIT");
+                }
+                if (VehicleState.get(vsi, 0).isPitting())
+                {
+                	gaps[i].update("PIT STOP");
                 }
                 
                 switch(data) //0-2-4-gaps 1-place gained

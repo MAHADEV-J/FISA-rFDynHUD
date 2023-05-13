@@ -18,6 +18,8 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
+* Fix row height issue
+* The text of the session status row isn't in the middle; fix that
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Make it so that the session status row briefly turns green at every green flag (low priority)
 * Show a flag icon next to the name of drivers who have finished (low priority)

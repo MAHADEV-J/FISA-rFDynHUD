@@ -393,83 +393,93 @@ public class timingtower extends Widget
     {
         ScoringInfo scoringInfo = gameData.getScoringInfo();
         
-        //if ( needsCompleteRedraw || positions[i].hasChanged() )
-        //{
-            int drawncars = Math.min( scoringInfo.getNumVehicles(), numVeh.getValue() );
-            short posOffset = 0; // the top position that should be drawn on screen (0-indexed)
+        int drawncars = Math.min( scoringInfo.getNumVehicles(), numVeh.getValue() );
+        short posOffset = 0; // the top position that should be drawn on screen (0-indexed)
+        
+        String status = "FORMATION LAP"; //this doesn't work because it's immediately overridden by code further down, but whatever
+        if (scoringInfo.getGamePhase() == GamePhase.FORMATION_LAP || scoringInfo.getGamePhase() == GamePhase.BEFORE_SESSION_HAS_BEGUN || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() < 1)
+        {
+        	status = "FORMATION LAP";
+        }
+        else if (scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
+        {
+        	status = "FINISH";
+        }
+        else
+        {
+        	status = "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps());
+        }
+        
+        //Loop to determine session status row font and background colours depending on flag
+        //----------------------------------------------------------------------------------
+        Color statusFontColor = fontColor2.getColor();
+        //if caution or local yellow: black on yellow
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
+		{
+        	statusColor = new Color(252, 181, 3, 255);
+        	statusFontColor = Color.BLACK;
+        	forceCompleteRedraw(true); //apparently this is necessary
+		}
+        //if final lap: black on white
+        if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
+        {
+        	statusColor = new Color(255, 255, 255, 255);
+        	statusFontColor = Color.BLACK;
+        	forceCompleteRedraw(true);
+        }
+        //if finished: white on grey (same as normal)
+        if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED)
+        {
+        	statusColor = new Color(87, 89, 89, 255);
+        	statusFontColor = fontColor2.getColor();
+        	forceCompleteRedraw(true);
+        }
+        //TODO: add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
+        //if race stopped: white on red
+        if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
+        {
+        	statusColor = new Color(161, 9, 11, 255);
+        	statusFontColor = fontColor2.getColor();
+        	forceCompleteRedraw(true);
+        }
+        
+        //Loop to show laps or time remaining depending on which it is
+        //------------------------------------------------------------
+        //laps remaining
+        if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS)
+        {
+        	dsStatus.draw(offsetX, offsetY, status, statusFontColor, texture);
+        }
+        //time remaining or laps remaining running out of time
+        if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.TIME || scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS && scoringInfo.getEstimatedMaxLaps(scoringInfo.getLeadersVehicleScoringInfo()) < scoringInfo.getMaxLaps())
+        {
+        	//show time remaining
+        }
+        
+        for(int i=0;i < drawncars;i++)
+        { 
+        	if ( needsCompleteRedraw || positions[i].hasChanged() || gaps[i].hasChanged() )
+            {
+        		//if(carsOnLeadLap.getValue() > numVeh.getValue() && i != 0)
+        			//posOffset = (short)( carsOnLeadLap.getValue() - numVeh.getValue() );
+        		//else
+        			//posOffset = 0;
+        		
+        		if(positions[i + posOffset].getValue() != -1)
+        			dsPos[i].draw( offsetX, offsetY, String.valueOf(positions[i + posOffset]), texture );
+        		else
+        			dsPos[i].draw( offsetX, offsetY, "", texture );
             
-            String status = "FORMATION LAP"; //this doesn't work because it's immediately overridden by code further down, but whatever
-            if (scoringInfo.getGamePhase() == GamePhase.FORMATION_LAP || scoringInfo.getGamePhase() == GamePhase.BEFORE_SESSION_HAS_BEGUN || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() < 1)
-            {
-            	status = "FORMATION LAP";
-            }
-            else if (scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
-            {
-            	status = "FINISH";
-            }
-            else
-            {
-            	status = "LAP " + String.valueOf(scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap()) + " / " + String.valueOf(scoringInfo.getMaxLaps());
-            }
+        		if(gainedPlaces[i + posOffset] >= 0)
+        			GainedFontColor = fontColor2;
+        		else
+        			GainedFontColor = fontColor1;
             
-            Color statusFontColor = fontColor2.getColor();
-            if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
-			{
-            	statusColor = new Color(252, 181, 3, 255);
-            	statusFontColor = Color.BLACK;
-            	forceCompleteRedraw(true); //apparently this is necessary
-			}
-            if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
-            {
-            	statusColor = new Color(255, 255, 255, 255);
-            	statusFontColor = Color.BLACK;
-            	forceCompleteRedraw(true);
+        		dsName[i].draw( offsetX, offsetY, names[i + posOffset].getValue(), texture );
+        		                    
+        		dsTime[i].draw( offsetX, offsetY, gaps[i + posOffset].getValue(), GainedFontColor.getColor(), texture );
             }
-            else
-            {
-            	statusColor = new Color(87, 89, 89, 255);
-            	statusFontColor = fontColor2.getColor();
-            	forceCompleteRedraw(true);
-            }
-          //add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
-            if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
-            {
-            	statusColor = new Color(161, 9, 11, 255);
-            	forceCompleteRedraw(true);
-            }
-            if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS)
-            {
-            	dsStatus.draw(offsetX, offsetY, status, statusFontColor, texture);
-            }
-            if (scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.TIME || scoringInfo.getLeadersVehicleScoringInfo().getSessionLimit() == SessionLimit.LAPS && scoringInfo.getEstimatedMaxLaps(scoringInfo.getLeadersVehicleScoringInfo()) < scoringInfo.getMaxLaps())
-            {
-            	//show time remaining
-            }
-            for(int i=0;i < drawncars;i++)
-            { 
-            	if ( needsCompleteRedraw || positions[i].hasChanged() || gaps[i].hasChanged() )
-                {
-            		//if(carsOnLeadLap.getValue() > numVeh.getValue() && i != 0)
-            			//posOffset = (short)( carsOnLeadLap.getValue() - numVeh.getValue() );
-            		//else
-            			//posOffset = 0;
-            		
-            		if(positions[i + posOffset].getValue() != -1)
-            			dsPos[i].draw( offsetX, offsetY, String.valueOf(positions[i + posOffset]), texture );
-            		else
-            			dsPos[i].draw( offsetX, offsetY, "", texture );
-                
-            		if(gainedPlaces[i + posOffset] >= 0)
-            			GainedFontColor = fontColor2;
-            		else
-            			GainedFontColor = fontColor1;
-                
-            		dsName[i].draw( offsetX, offsetY, names[i + posOffset].getValue(), texture );
-            		                    
-            		dsTime[i].draw( offsetX, offsetY, gaps[i + posOffset].getValue(), GainedFontColor.getColor(), texture );
-                }
-            }
-        //}
+        }
     }
     
     

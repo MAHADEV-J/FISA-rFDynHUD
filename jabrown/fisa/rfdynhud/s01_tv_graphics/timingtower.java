@@ -213,19 +213,12 @@ public class timingtower extends Widget
                 		}
                 	}
                 }
-                //else if(vsi.getLapsBehindLeader(false) != 0)
-                //{
-                	//gaps[i].update(String.valueOf(vsi.getLapsBehindLeader(false)));
-                	//if(place != 1 && vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                	//{
-                		//gaps[i].update(String.valueOf(vsi.getLapsBehindNextInFront(false) + vsi.getNextInFront(false).getLapsBehindLeader(false)));
-                	//}
-                //}
-                //if(vsi.getNextInFront(false).getLapsBehindLeader(false) != 0)
-                //{
-                	//int something = vsi.getNextInFront(false).getLapsBehindLeader(false) + vsi.getLapsBehindNextInFront(false);
-                	//gaps[i].update(String.valueOf(something));
-                //}
+                
+                //another loop to show when a car is in the pits
+                if (vsi.isInPits() == true)
+                {
+                	gaps[i].update("IN PIT");
+                }
                 
                 switch(data) //0-2-4-gaps 1-place gained
                 {

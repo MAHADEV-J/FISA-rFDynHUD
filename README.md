@@ -13,13 +13,13 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 
 ## Known bugs
 * The gap to leader in the timing tower widget only updates once per sector - EXCEPT on the formation lap, where it updates constantly. Updating constantly is what I want it to do. But it seems that this is possibly how the rFactor API works.
-* For lapped cars, the number of laps they are down is not always shown correctly. Most of the time it's too low. This is because of a bug in the code of rFDynHUD itself. This is the best I could do to make a workaround for that bug. My only hope of getting it to show correctly now is to look into the code of some of Ákos Fődi's F1 TV graphics widget sets to see if there's a solution in there that will make it work. But I'm not counting on it.\
+* For lapped cars, the number of laps they are down is not always shown correctly. Most of the time it's too low. This is because of a bug in the code of rFDynHUD itself. This is the best I could do to make a workaround for that bug. My only hope of getting it to show correctly now is to look into the code of some of Ákos Fődi's F1 TV graphics widget sets to see if there's a solution in there that will make it work. But I'm not counting on it.
+* When cars finish making their pit stop and drive away slowly, sometimes the gap to leader part of the timing tower flashes "PIT STOP" instead of "IN PIT" for a split second. This is probably because the rFDynHUD API determines whether a car is pitting based on whether or not it is stationary, so if a car stops to let another car past, rFDynHUD thinks it's pitting. There's probably not much that can be done about this, but then again it doesn't really matter.\
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Make it so that the session status row briefly turns green at every green flag (low priority)
-* Make it so that the timing tower can display how many pit stops a car has made. (toggle between this and gap to leader)
 * Show a flag icon next to the name of drivers who have finished (low priority)
 * Add an area to the timing tower that becomes visible during pit stops and shows how long the pit stop is (optional, very low priority)
 * Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)

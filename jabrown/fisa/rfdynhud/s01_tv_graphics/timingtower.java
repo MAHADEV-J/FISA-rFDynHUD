@@ -116,7 +116,7 @@ public class timingtower extends Widget
         
         int top = ( rowHeight - fh ) / 2;
         
-        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+60 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
+        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+86 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
         top += rowHeight;
         for(int i=0;i < maxNumItems;i++)
         { 

@@ -203,6 +203,21 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
+        if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
+        {
+        	ToggleSafetyCarOut();
+        	visible = true;
+        }
+        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
+        {
+        	ToggleSafetyCarIn();
+        	visible = true;
+        }
+        if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        {
+        	ToggleRedFlag();
+        	visible = true;
+        }
     	if(visible == true || isEditorMode)
     	{
     		return true;
@@ -247,22 +262,6 @@ public class racecontrol extends Widget
     @Override
     protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
     {
-        if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
-        {
-        	ToggleSafetyCarOut();
-        	visible = true;
-        }
-        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
-        {
-        	ToggleSafetyCarIn();
-        	visible = true;
-        }
-        if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
-        {
-        	ToggleRedFlag();
-        	visible = true;
-        }
-        
         if ( needsCompleteRedraw || isVisible() )
         {
         	dsCaption.draw( offsetX, offsetY, captionText, texture );

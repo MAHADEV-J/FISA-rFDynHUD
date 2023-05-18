@@ -252,10 +252,9 @@ public class racecontrol extends Widget
         	ToggleSafetyCarOut();
         	visible = true;
         }
-        if (gameData.getScoringInfo().getYellowFlagState() != YellowFlagState.NONE)
+        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
-        	informationText = String.valueOf(gameData.getScoringInfo().getYellowFlagState());
-        	forceCompleteRedraw(true);
+        	ToggleSafetyCarIn();
         	visible = true;
         }
         if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
@@ -264,7 +263,7 @@ public class racecontrol extends Widget
         	visible = true;
         }
         
-        if ( needsCompleteRedraw )
+        if ( needsCompleteRedraw || isVisible() )
         {
         	dsCaption.draw( offsetX, offsetY, captionText, texture );
             dsInformation.draw( offsetX, offsetY, informationText, texture );

@@ -8,6 +8,7 @@ import org.openmali.types.twodee.Rect2i;
 
 import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_graphics;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
+import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FontProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
 import net.ctdp.rfdynhud.properties.PropertyLoader;
@@ -36,6 +37,11 @@ public class racecontrol extends Widget
     private final FontProperty largeFont = new FontProperty("LargeFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_LARGE_FONT.getKey());
     private final FontProperty captionFont = new FontProperty("CaptionFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_CAPTION_FONT.getKey());
     private final FontProperty smallFont = new FontProperty("SmallFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_SMALL_FONT.getKey());
+    private static final InputAction ToggleSafetyCarOut = new InputAction ("ToggleSafetyCarOut", false); //defines an input action
+    private static final InputAction ToggleSafetyCarIn = new InputAction ("ToggleSafetyCarIn", false); //defines an input action
+    private static final InputAction ToggleRedFlag = new InputAction ("ToggleRedFlag", false); //defines an input action
+    private Boolean visible = false;
+    private int informationToShow = 5;
     
     public racecontrol()
     {
@@ -114,7 +120,20 @@ public class racecontrol extends Widget
     	scOut = "SAFETY CAR";
     	scIn = "SAFETY CAR IN THIS LAP";
     	redFlag = "RACE STOPPED";
-    	informationText = "NOT SPECIFIED";
+    	switch (informationToShow)
+    	{
+    		case 0:
+    			informationText = scOut;
+    			break;
+    		case 1:
+    			informationText = scIn;
+    			break;
+    		case 2:
+    			informationText = redFlag;
+    			break;
+    		default:
+    			informationText = "NOT SPECIFIED";
+    	}
     }
     
     public void toggleInformationText(String text)
@@ -122,28 +141,66 @@ public class racecontrol extends Widget
     	informationText = text;
     }
     
-    public void toggleSafetyCarOut()
+    @Override
+    public InputAction[] getInputActions()
     {
-    	if(informationText != scOut)
-    	{
-    		toggleInformationText(scOut);
-    	}
+    	//Registers this action as an action that a key input can be bound to.
+    	return (new InputAction[] {ToggleSafetyCarOut, ToggleSafetyCarIn, ToggleRedFlag});
     }
     
-    public void toggleSafetyCarIn()
+    @Override
+    public Boolean onBoundInputStateChanged(InputAction action, boolean state, int modifierMask, long when, LiveGameData gameData, boolean isEditorMode)
     {
-    	if(informationText != scIn)
+    	Boolean result = super.onBoundInputStateChanged(action, state, modifierMask, when, gameData, isEditorMode);
+    	
+    	if(action == ToggleSafetyCarOut)
     	{
-    		toggleInformationText(scIn);
+    		ToggleSafetyCarOut();
+    		visible = true;
     	}
+    	if(action == ToggleSafetyCarIn)
+    	{
+    		ToggleSafetyCarIn();
+    		visible = true;
+    	}
+    	if(action == ToggleRedFlag)
+    	{
+    		ToggleRedFlag();
+    		visible = true;
+    	}
+    	
+    	return result;
     }
     
-    public void toggleRedFlag()
+    public void ToggleSafetyCarOut()
     {
-    	if(informationText != redFlag)
+    	informationToShow = 0;
+		toggleInformationText(scOut);
+    	forceCompleteRedraw(true);
+    }
+    
+    public void ToggleSafetyCarIn()
+    {
+   		informationToShow = 1;
+   		toggleInformationText(scIn);
+    	forceCompleteRedraw(true);
+    }
+    
+    public void ToggleRedFlag()
+    {
+   		informationToShow = 2;
+   		toggleInformationText(redFlag);
+    	forceCompleteRedraw(true);
+    }
+    
+    @Override
+    protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
+    {
+    	if(visible == true || isEditorMode)
     	{
-    		toggleInformationText(redFlag);
+    		return true;
     	}
+    	return false;
     }
     
     @Override
@@ -156,14 +213,28 @@ public class racecontrol extends Widget
     	textureCanvas.setColor(new Color(0, 0, 0, 80));
     	Rect2i rectangle = new Rect2i(offsetX, offsetY, width, height);
     	textureCanvas.fillRect(rectangle);
-    	
-    	textureCanvas.setColor(Color.YELLOW);
+    
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
     	int flagOffsetX = offsetX + 28;
     	int flagOffsetY = offsetY + 28;
     	Rect2i flag = new Rect2i(flagOffsetX, flagOffsetY, flagWidth, flagHeight);
-    	textureCanvas.fillRect(flag);
+    	
+    	if(informationToShow == 0)
+    	{
+    		textureCanvas.setColor(Color.YELLOW);
+        	textureCanvas.fillRect(flag);
+    	}
+    	else if(informationToShow == 2)
+    	{
+    		textureCanvas.setColor(Color.RED);
+    		textureCanvas.fillRect(flag);
+    	}
+    	else
+    	{
+    		textureCanvas.setColor(new Color(0, 0, 0, 0));
+    		textureCanvas.fillRect(flag);
+    	}
     }
     
     @Override

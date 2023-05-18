@@ -14,6 +14,7 @@ import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.SessionLimit;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
 import net.ctdp.rfdynhud.gamedata.VehicleState;
+import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.ColorProperty;
 import net.ctdp.rfdynhud.properties.DelayProperty;
@@ -49,6 +50,8 @@ public class timingtower extends Widget
     private final ImagePropertyWithTexture imgNeutral = new ImagePropertyWithTexture( "imgTime", "prunn/f1_2011/tower/bg_gap.png" );
     private final ColorProperty fontColor1 = new ColorProperty("fontColor1", JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR1_NAME);
     private final ColorProperty fontColor2 = new ColorProperty( "fontColor2", JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR2_NAME );
+    private final float invisibleTime = 10.0f;
+    private float appearTime = -1f;
     private Color statusColor = new Color(87, 89, 89, 255);
     private DrawnString dsStatus = null;
     private DrawnString[] dsPos = null;
@@ -71,6 +74,7 @@ public class timingtower extends Widget
     private StringValue[] gaps = null;
     private short[] lapsDown = null;
     private ColorProperty GainedFontColor;
+    private float hideTime = -1f;
     private static final InputAction ToggleGapsOrStops = new InputAction ("ToggleGapsOrStops", false); //defines an input action
    
     @Override
@@ -322,35 +326,43 @@ public class timingtower extends Widget
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
         super.updateVisibility( gameData, isEditorMode );
+        Boolean result = true;
+        Boolean bongo = true;
         
         ScoringInfo scoringInfo = gameData.getScoringInfo();
         
-        //currentLap.update( scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() );
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
         FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
         
-        //commented out 20230507 1947
-//        if( currentLap.hasChanged() && currentLap.getValue() > -1 || isEditorMode)
-//        {
-//            
-//            //fetch what data is shown others-gaps 1-places gained/lost
-//            //if(scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus().isFinished() || isEditorMode)
-//                //shownData = 0 ;
-//            //else
-//                //shownData = (short)( Math.random() * 2 );
-//            
-//        	shownData = 0;
-//            clearArrayValues(scoringInfo.getNumVehicles());
-//            FillArrayValues( 1, scoringInfo, shownData, isEditorMode, gameData);
-//            if(!isEditorMode)
-//                forceCompleteRedraw( true );
-//            
-//            return true;
-//            
-//        }
+        if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
+        {
+        	bongo = false;
+        }
+        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
+        {
+        	bongo = false;
+        }
+        if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        {
+        	bongo = false;
+        }
         
-        return true;
+        if (bongo == false)
+        {
+        	appearTime = scoringInfo.getSessionTime() + invisibleTime;
+        	forceCompleteRedraw(true);
+        }
         
+        if (scoringInfo.getSessionTime() < appearTime)
+        {
+        	result = false;
+        }
+        else
+        {
+        	result = true;
+        }
+        
+        return result;
         
     }
     @Override

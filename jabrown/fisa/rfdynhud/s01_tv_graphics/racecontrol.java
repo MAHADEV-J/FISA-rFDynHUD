@@ -39,6 +39,8 @@ public class racecontrol extends Widget
     private final FontProperty largeFont = new FontProperty("LargeFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_LARGE_FONT.getKey());
     private final FontProperty captionFont = new FontProperty("CaptionFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_CAPTION_FONT.getKey());
     private final FontProperty smallFont = new FontProperty("SmallFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_SMALL_FONT.getKey());
+    private final float visibleTime = 10.0f;
+    private float disappearTime = -1f;
     private static final InputAction ToggleSafetyCarOut = new InputAction ("ToggleSafetyCarOut", false); //defines an input action
     private static final InputAction ToggleSafetyCarIn = new InputAction ("ToggleSafetyCarIn", false); //defines an input action
     private static final InputAction ToggleRedFlag = new InputAction ("ToggleRedFlag", false); //defines an input action
@@ -203,25 +205,44 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
+    	Boolean bongo = false;
+    	
         if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
         {
         	ToggleSafetyCarOut();
-        	visible = true;
+        	bongo = true;	
         }
         if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
         	ToggleSafetyCarIn();
-        	visible = true;
+        	bongo = true;
         }
         if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
         	ToggleRedFlag();
+        	bongo = true;
+        }
+        
+        if (bongo == true)
+        {
+        	disappearTime = gameData.getScoringInfo().getSessionTime() + visibleTime;
+        	forceCompleteRedraw(true);
+        }
+        
+        if (gameData.getScoringInfo().getSessionTime() < disappearTime)
+        {
         	visible = true;
         }
+        else
+        {
+        	visible = false;
+        }
+        
     	if(visible == true || isEditorMode)
     	{
     		return true;
     	}
+    	
     	return false;
     }
     

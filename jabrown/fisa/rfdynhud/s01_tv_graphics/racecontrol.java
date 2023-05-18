@@ -7,7 +7,9 @@ import java.io.IOException;
 import org.openmali.types.twodee.Rect2i;
 
 import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_graphics;
+import net.ctdp.rfdynhud.gamedata.GamePhase;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
+import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FontProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
@@ -40,6 +42,7 @@ public class racecontrol extends Widget
     private static final InputAction ToggleSafetyCarOut = new InputAction ("ToggleSafetyCarOut", false); //defines an input action
     private static final InputAction ToggleSafetyCarIn = new InputAction ("ToggleSafetyCarIn", false); //defines an input action
     private static final InputAction ToggleRedFlag = new InputAction ("ToggleRedFlag", false); //defines an input action
+    private static final InputAction Hide = new InputAction ("Hide", false); //defines an input action
     private Boolean visible = false;
     private int informationToShow = 5;
     
@@ -145,7 +148,7 @@ public class racecontrol extends Widget
     public InputAction[] getInputActions()
     {
     	//Registers this action as an action that a key input can be bound to.
-    	return (new InputAction[] {ToggleSafetyCarOut, ToggleSafetyCarIn, ToggleRedFlag});
+    	return (new InputAction[] {ToggleSafetyCarOut, ToggleSafetyCarIn, ToggleRedFlag, Hide});
     }
     
     @Override
@@ -167,6 +170,10 @@ public class racecontrol extends Widget
     	{
     		ToggleRedFlag();
     		visible = true;
+    	}
+    	if(action == Hide)
+    	{
+    		visible = false;
     	}
     	
     	return result;
@@ -240,6 +247,23 @@ public class racecontrol extends Widget
     @Override
     protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
     {
+        if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
+        {
+        	ToggleSafetyCarOut();
+        	visible = true;
+        }
+        if (gameData.getScoringInfo().getYellowFlagState() != YellowFlagState.NONE)
+        {
+        	informationText = String.valueOf(gameData.getScoringInfo().getYellowFlagState());
+        	forceCompleteRedraw(true);
+        	visible = true;
+        }
+        if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        {
+        	ToggleRedFlag();
+        	visible = true;
+        }
+        
         if ( needsCompleteRedraw )
         {
         	dsCaption.draw( offsetX, offsetY, captionText, texture );

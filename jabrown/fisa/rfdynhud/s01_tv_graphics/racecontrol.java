@@ -128,7 +128,7 @@ public class racecontrol extends Widget
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
-        dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioOffset + padding + flagWidth + padding + margin + 3, margin, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+        dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioOffset + padding + flagWidth + padding + margin + 3, margin / 2, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", aspectRatioOffset + padding + flagWidth + padding + margin, 2 * margin + padding, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
     	captionText = "RACE CONTROL";
     	scOut = "SAFETY CAR";
@@ -215,6 +215,7 @@ public class racecontrol extends Widget
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
     	visible = false;
+    	//visible = super.updateVisibility(gameData, isEditorMode);
     	Boolean bongo = false;
     	
         ScoringInfo scoringInfo = gameData.getScoringInfo();
@@ -278,12 +279,13 @@ public class racecontrol extends Widget
     	textureCanvas.fillRect(rectangle);
     
     	int aspectRatioOffset = 80;
+    	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	int padding = 4;
     	
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
     	int flagOffsetX = offsetX + aspectRatioOffset + padding;
-    	int flagOffsetY = offsetY + 26 + padding;
+    	int flagOffsetY = offsetY + 2 * margin;
     	Rect2i flag = new Rect2i(flagOffsetX, flagOffsetY, flagWidth, flagHeight);
     	
     	if(informationToShow == 0)

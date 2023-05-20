@@ -222,7 +222,14 @@ public class racecontrol extends Widget
         if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
         	ToggleSafetyCarIn();
-        	bongo = true;
+        	if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
+        	{
+            	bongo = true;	
+        	}
+        	else
+        	{
+        		bongo = false;
+        	}
         }
         if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {

@@ -338,15 +338,22 @@ public class timingtower extends Widget
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
         FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
         
-        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.PENDING)
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
         {
         	bongo = false;
         }
-        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
-        	bongo = false;
+        	if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
+        	{
+            	bongo = false;	
+        	}
+        	else
+        	{
+        		bongo = true;
+        	}
         }
-        if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
         	bongo = false;
         }

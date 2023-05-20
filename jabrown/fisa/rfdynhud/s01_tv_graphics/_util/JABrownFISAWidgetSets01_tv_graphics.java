@@ -21,12 +21,14 @@
  */
 package jabrown.fisa.rfdynhud.s01_tv_graphics._util;
 
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
 import net.ctdp.rfdynhud.util.FontUtils;
 import net.ctdp.rfdynhud.util.RFDHLog;
+import net.ctdp.rfdynhud.util.StringMapping;
 import net.ctdp.rfdynhud.widgets.WidgetsConfiguration;
 import net.ctdp.rfdynhud.widgets.base.widget.Widget;
 import net.ctdp.rfdynhud.widgets.base.widget.WidgetPackage;
@@ -55,7 +57,14 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
     public static final String GAP_FONT_COLOR1_NAME = "GapFontColor1";
     public static final String GAP_FONT_COLOR2_NAME = "GapFontColor2";
     public static final String FISA_S01_TV_GRAPHICS_FONT_NAME = "fisa_s01Font";
+    public static final String FISA_S01_TV_GRAPHICS_LARGE_FONT_NAME = "fisa_s01LargeFont";
+    public static final String FISA_S01_TV_GRAPHICS_CAPTION_FONT_NAME = "fisa_s01CaptionFont";
+    public static final String FISA_S01_TV_GRAPHICS_SMALL_FONT_NAME = "fisa_s01SmallFont";
     public static final String POS_FONT_NAME = "PosFont";
+    public static final StringMapping FISA_S01_TV_GRAPHICS_FONT = new StringMapping( FISA_S01_TV_GRAPHICS_FONT_NAME, FontUtils.getFontString( "Gill Sans MT", Font.BOLD, 24, true, true ) );
+    public static final StringMapping FISA_S01_TV_GRAPHICS_LARGE_FONT = new StringMapping( FISA_S01_TV_GRAPHICS_LARGE_FONT_NAME, FontUtils.getFontString( "Gill Sans MT", Font.BOLD, 64, true, true ) );
+    public static final StringMapping FISA_S01_TV_GRAPHICS_CAPTION_FONT = new StringMapping( FISA_S01_TV_GRAPHICS_CAPTION_FONT_NAME, FontUtils.getFontString( "Gill Sans MT", Font.BOLD, 24, true, true ) );
+    public static final StringMapping FISA_S01_TV_GRAPHICS_SMALL_FONT = new StringMapping( FISA_S01_TV_GRAPHICS_FONT_NAME, FontUtils.getFontString( "Gill Sans MT", Font.BOLD, 22, true, true ) );
     
     public String getDefaultNamedColorValue( String name )
     {
@@ -73,6 +82,15 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
             return ( "#FFFFFF" );
         if ( name.equals( GAP_FONT_COLOR2_NAME ) )
             return ( "#FFFFFF" );
+        
+        return ( null );
+    }
+    
+    @Override
+    public String getDefaultNamedFontValue( String name )
+    {
+        if ( name.equals( FISA_S01_TV_GRAPHICS_FONT.getKey() ) )
+            return ( FISA_S01_TV_GRAPHICS_FONT.getValue() );
         
         return ( null );
     }

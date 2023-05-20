@@ -18,11 +18,13 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
+* Add "SAFETY CAR IN THIS LAP" and "SESSION STOPPED" to race control widget
+* Make race control widget appear or disappear under the right conditions
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Make it so that the session status row briefly turns green at every green flag (low priority)
 * Show a flag icon next to the name of drivers who have finished (low priority)
 * Add an area to the timing tower that becomes visible during pit stops and shows how long the pit stop is (optional, very low priority)
-* Create more widgets (race control; individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)
+* Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)
 * Get rid of "magic numbers" throughout the code (i.e., create more variables)
 
 ## Changelog
@@ -30,6 +32,7 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 * Branch "sessionstatus": added a row for session status to the widget.
 * Branch "pitstop": made the timing row update with the text "IN PIT" when a car is in the pitlane but not pitting, and "PIT STOP" when the car is actually pitting.\
 For more information, see the commit history.
+* Branch "racecontrol": added a new widget that displays messages from race control. Currently it's always visible and it only says "SAFETY CAR".
 
 ### old changes below
 Previously, all these changes were stored as comments in the file timingtower.java. I'm adding them all to this readme so I can remove them from there. It was about time I added version control as a better way to track changes.

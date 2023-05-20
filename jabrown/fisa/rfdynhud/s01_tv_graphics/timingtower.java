@@ -338,7 +338,7 @@ public class timingtower extends Widget
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
         FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
         
-        if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
+        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.PENDING)
         {
         	bongo = false;
         }
@@ -356,11 +356,6 @@ public class timingtower extends Widget
         	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
         	result = false;
         	forceCompleteRedraw(true);
-        	currentSector.update(scoringInfo.getLeadersVehicleScoringInfo().getLastSector1());
-        	if (currentSector.hasChanged())
-        	{
-        		result = true;
-        	}
         }
         
 //        if (scoringInfo.getSessionTime() < appearTime)

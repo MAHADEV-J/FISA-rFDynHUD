@@ -210,7 +210,7 @@ public class racecontrol extends Widget
     {
     	Boolean bongo = false;
     	
-        if (gameData.getScoringInfo().getGamePhase() == GamePhase.FULL_COURSE_YELLOW)
+        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.PENDING)
         {
         	ToggleSafetyCarOut();
         	bongo = true;	
@@ -231,11 +231,6 @@ public class racecontrol extends Widget
         	//disappearTime = gameData.getScoringInfo().getSessionTime() + visibleTime;
         	visible = true;
         	forceCompleteRedraw(true);
-        	currentSector.update(gameData.getScoringInfo().getLeadersVehicleScoringInfo().getLastSector1());
-        	if (currentSector.hasChanged())
-        	{
-        		visible = false;
-        	}
         }
         
 //        if (gameData.getScoringInfo().getSessionTime() < disappearTime)

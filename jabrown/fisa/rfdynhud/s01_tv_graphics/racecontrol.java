@@ -123,7 +123,7 @@ public class racecontrol extends Widget
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
     	currentSector = new FloatValue();
-    	int aspectRatioOffset = 80;
+    	int aspectRatioOffset = 160;
     	int padding = 4;
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	int flagHeight = (5 * height) / 12;

@@ -44,8 +44,8 @@ import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_gr
 public class timingtower extends Widget
 {
     private TextureImage2D texGainedPlaces = null;
-    private final ImagePropertyWithTexture imgPos = new ImagePropertyWithTexture( "imgPos", "prunn/f1_2011/tower/race_bg3.png" );
-    private final ImagePropertyWithTexture imgPosFirst = new ImagePropertyWithTexture( "imgPos", "prunn/f1_2011/tower/race_bg_first3.png" );
+    private final ImagePropertyWithTexture imgPos = new ImagePropertyWithTexture( "imgPos", "prunn/f1_2011/tower/race_bg4.png" );
+    private final ImagePropertyWithTexture imgPosFirst = new ImagePropertyWithTexture( "imgPos", "prunn/f1_2011/tower/race_bg_first4.png" );
     private final ImagePropertyWithTexture imgPositive = new ImagePropertyWithTexture( "imgTime", "prunn/f1_2011/tower/bg_gap.png" );
     private final ImagePropertyWithTexture imgNegative = new ImagePropertyWithTexture( "imgTime", "prunn/f1_2011/tower/bg_gap.png" );
     private final ImagePropertyWithTexture imgNeutral = new ImagePropertyWithTexture( "imgTime", "prunn/f1_2011/tower/bg_gap.png" );
@@ -124,7 +124,8 @@ public class timingtower extends Widget
         
         int top = ( rowHeight - fh ) / 2;
         
-        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+86 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
+        //dsStatus = drawnStringFactory.newDrawnString( "dsStatus", rowHeight+86 + fontxnameoffset.getValue(), top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
+        dsStatus = drawnStringFactory.newDrawnString( "dsStatus", (imgPos.getTexture().getWidth() + texGainedPlaces.getWidth()) / 2, top + fontyoffset.getValue(), Alignment.CENTER, false, getFont(), isFontAntiAliased(), whiteFontColor );
         top += rowHeight;
         for(int i=0;i < maxNumItems;i++)
         { 
@@ -404,8 +405,9 @@ public class timingtower extends Widget
 //		{
 //			statusColor = new Color(0, 240, 40);
 //		}
-        texture.clear(statusColor, offsetX, offsetY, rowHeight+fw2, rowHeight, false, null);
-        texture.clear(statusColor, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY, imgPos.getTexture().getWidth(), rowHeight, false, null);
+        //texture.clear(statusColor, offsetX, offsetY, rowHeight+fw2, rowHeight, false, null);
+        //texture.clear(statusColor, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY, imgPos.getTexture().getWidth(), rowHeight, false, null);
+        texture.clear(statusColor, offsetX, offsetY, imgPos.getTexture().getWidth() + texGainedPlaces.getWidth() - 4, rowHeight, false, null);
         
         for(int i=0;i < drawncars;i++)
         {
@@ -435,7 +437,8 @@ public class timingtower extends Widget
                         //else
                             texGainedPlaces = imgNeutral.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
                     
-                    texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*(i+1), true, null );
+                    //texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*(i+1), true, null );
+                    texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth(), offsetY+rowHeight*(i+1), true, null );
                     
                     
                 //}

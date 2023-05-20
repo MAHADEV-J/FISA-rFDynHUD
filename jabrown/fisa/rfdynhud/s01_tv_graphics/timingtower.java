@@ -473,14 +473,14 @@ public class timingtower extends Widget
         //if final lap: black on white
         if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
         {
-        	statusColor = new Color(255, 255, 255, 255);
+        	statusColor = Color.WHITE;
         	statusFontColor = Color.BLACK;
         	forceCompleteRedraw(true);
         }
         //if caution or local yellow: black on yellow
         if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
 		{
-        	statusColor = new Color(252, 181, 3, 255);
+        	statusColor = Color.YELLOW;
         	statusFontColor = Color.BLACK;
         	forceCompleteRedraw(true); //apparently this is necessary
 		}
@@ -495,7 +495,7 @@ public class timingtower extends Widget
         //if race stopped: white on red
         if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
         {
-        	statusColor = new Color(161, 9, 11, 255);
+        	statusColor = Color.RED;
         	statusFontColor = fontColor2.getColor();
         	forceCompleteRedraw(true);
         }

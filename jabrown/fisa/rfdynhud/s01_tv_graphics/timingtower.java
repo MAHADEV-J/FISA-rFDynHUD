@@ -29,6 +29,7 @@ import net.ctdp.rfdynhud.render.TextureImage2D;
 import net.ctdp.rfdynhud.util.PropertyWriter;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
+import net.ctdp.rfdynhud.values.FloatValue;
 import net.ctdp.rfdynhud.values.IntValue;
 import net.ctdp.rfdynhud.values.StringValue;
 import net.ctdp.rfdynhud.widgets.base.widget.Widget;
@@ -349,18 +350,24 @@ public class timingtower extends Widget
         
         if (bongo == false)
         {
-        	appearTime = scoringInfo.getSessionTime() + invisibleTime;
+        	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
+        	result = false;
         	forceCompleteRedraw(true);
+        	FloatValue currentSector = new FloatValue(scoringInfo.getLeadersVehicleScoringInfo().getLastSector1());
+        	if (currentSector.hasChanged())
+        	{
+        		result = true;
+        	}
         }
         
-        if (scoringInfo.getSessionTime() < appearTime)
-        {
-        	result = false;
-        }
-        else
-        {
-        	result = true;
-        }
+//        if (scoringInfo.getSessionTime() < appearTime)
+//        {
+//        	result = false;
+//        }
+//        else
+//        {
+//        	result = true;
+//        }
         
         return result;
         

@@ -22,6 +22,7 @@ import net.ctdp.rfdynhud.render.TextureImage2D;
 import net.ctdp.rfdynhud.util.PropertyWriter;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
+import net.ctdp.rfdynhud.values.FloatValue;
 import net.ctdp.rfdynhud.widgets.base.widget.Widget;
 
 /**
@@ -225,18 +226,24 @@ public class racecontrol extends Widget
         
         if (bongo == true)
         {
-        	disappearTime = gameData.getScoringInfo().getSessionTime() + visibleTime;
+        	//disappearTime = gameData.getScoringInfo().getSessionTime() + visibleTime;
+        	visible = false;
         	forceCompleteRedraw(true);
+        	FloatValue currentSector = new FloatValue(gameData.getScoringInfo().getLeadersVehicleScoringInfo().getLastSector1());
+        	if (currentSector.hasChanged())
+        	{
+        		visible = true;
+        	}
         }
         
-        if (gameData.getScoringInfo().getSessionTime() < disappearTime)
-        {
-        	visible = true;
-        }
-        else
-        {
-        	visible = false;
-        }
+//        if (gameData.getScoringInfo().getSessionTime() < disappearTime)
+//        {
+//        	visible = true;
+//        }
+//        else
+//        {
+//        	visible = false;
+//        }
         
     	if(visible == true || isEditorMode)
     	{

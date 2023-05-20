@@ -9,6 +9,7 @@ import org.openmali.types.twodee.Rect2i;
 import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_graphics;
 import net.ctdp.rfdynhud.gamedata.GamePhase;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
+import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FontProperty;
@@ -208,19 +209,22 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
+    	visible = false;
     	Boolean bongo = false;
     	
-        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.PENDING)
+        ScoringInfo scoringInfo = gameData.getScoringInfo();
+    	
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
         {
         	ToggleSafetyCarOut();
         	bongo = true;	
         }
-        if (gameData.getScoringInfo().getYellowFlagState() == YellowFlagState.LAST_LAP)
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
         	ToggleSafetyCarIn();
         	bongo = true;
         }
-        if (gameData.getScoringInfo().getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
         	ToggleRedFlag();
         	bongo = true;

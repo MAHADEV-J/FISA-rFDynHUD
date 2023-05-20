@@ -463,13 +463,6 @@ public class timingtower extends Widget
         //Loop to determine session status row font and background colours depending on flag
         //----------------------------------------------------------------------------------
         Color statusFontColor = fontColor2.getColor();
-        //if caution or local yellow: black on yellow
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
-		{
-        	statusColor = new Color(252, 181, 3, 255);
-        	statusFontColor = Color.BLACK;
-        	forceCompleteRedraw(true); //apparently this is necessary
-		}
         //if final lap: black on white
         if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
         {
@@ -477,14 +470,21 @@ public class timingtower extends Widget
         	statusFontColor = Color.BLACK;
         	forceCompleteRedraw(true);
         }
-        //if finished: white on grey (same as normal)
-        if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED)
+        //if caution or local yellow: black on yellow
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
+		{
+        	statusColor = new Color(252, 181, 3, 255);
+        	statusFontColor = Color.BLACK;
+        	forceCompleteRedraw(true); //apparently this is necessary
+		}
+        //TODO: add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
+        //if finished or normal: white on grey
+        if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED || (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG && scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() != scoringInfo.getMaxLaps()))
         {
         	statusColor = new Color(87, 89, 89, 255);
         	statusFontColor = fontColor2.getColor();
         	forceCompleteRedraw(true);
         }
-        //TODO: add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
         //if race stopped: white on red
         if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
         {

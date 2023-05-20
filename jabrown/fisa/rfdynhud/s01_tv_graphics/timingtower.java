@@ -77,6 +77,7 @@ public class timingtower extends Widget
     private ColorProperty GainedFontColor;
     private float hideTime = -1f;
     private static final InputAction ToggleGapsOrStops = new InputAction ("ToggleGapsOrStops", false); //defines an input action
+    private FloatValue currentSector = new FloatValue();
    
     @Override
     public void onRealtimeEntered( LiveGameData gameData, boolean isEditorMode )
@@ -99,6 +100,8 @@ public class timingtower extends Widget
     @Override
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
+    	currentSector = new FloatValue();
+    	
         int maxNumItems = numVeh.getValue();
         dsPos = new DrawnString[maxNumItems];
         dsName = new DrawnString[maxNumItems];
@@ -326,7 +329,7 @@ public class timingtower extends Widget
     @Override
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
-        super.updateVisibility( gameData, isEditorMode );
+        //super.updateVisibility( gameData, isEditorMode );
         Boolean result = true;
         Boolean bongo = true;
         
@@ -353,7 +356,7 @@ public class timingtower extends Widget
         	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
         	result = false;
         	forceCompleteRedraw(true);
-        	FloatValue currentSector = new FloatValue(scoringInfo.getLeadersVehicleScoringInfo().getLastSector1());
+        	currentSector.update(scoringInfo.getLeadersVehicleScoringInfo().getLastSector1());
         	if (currentSector.hasChanged())
         	{
         		result = true;

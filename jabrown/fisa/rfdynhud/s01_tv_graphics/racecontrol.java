@@ -48,6 +48,7 @@ public class racecontrol extends Widget
     private static final InputAction Hide = new InputAction ("Hide", false); //defines an input action
     private Boolean visible = false;
     private int informationToShow = 5;
+    private FloatValue currentSector = null;
     
     public racecontrol()
     {
@@ -120,6 +121,7 @@ public class racecontrol extends Widget
     @Override
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
+    	currentSector = new FloatValue();
         dsCaption = drawnStringFactory.newDrawnString( "dsCaption", 240, 24, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", 240, 60, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
     	captionText = "RACE CONTROL";
@@ -227,12 +229,12 @@ public class racecontrol extends Widget
         if (bongo == true)
         {
         	//disappearTime = gameData.getScoringInfo().getSessionTime() + visibleTime;
-        	visible = false;
+        	visible = true;
         	forceCompleteRedraw(true);
-        	FloatValue currentSector = new FloatValue(gameData.getScoringInfo().getLeadersVehicleScoringInfo().getLastSector1());
+        	currentSector.update(gameData.getScoringInfo().getLeadersVehicleScoringInfo().getLastSector1());
         	if (currentSector.hasChanged())
         	{
-        		visible = true;
+        		visible = false;
         	}
         }
         

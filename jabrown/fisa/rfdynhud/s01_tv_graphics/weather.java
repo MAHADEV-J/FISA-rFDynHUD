@@ -58,7 +58,7 @@ public class weather extends Widget {
     {
     	ScoringInfo scoringInfo = gameData.getScoringInfo();
     	int lineHeight = (int) ((int)TextureImage2D.getStringHeight( "0%C", getFontProperty() ) * 1.15);
-        dsTemp.draw( offsetX, offsetY, "Temperature: " + String.valueOf(decimalFormat.format(scoringInfo.getAmbientTemperatureC())), texture );
+        dsTemp.draw( offsetX, offsetY, "Temperature: " + String.valueOf(decimalFormat.format(scoringInfo.getAmbientTemperatureC())) + "° C (" + String.valueOf(decimalFormat.format(scoringInfo.getAmbientTemperatureF())) + "° F)", texture );
         dsWind.draw( offsetX, offsetY + lineHeight, "Rain Intensity: " + String.valueOf(decimalFormat.format(scoringInfo.getRainingSeverity() * 100)) + "%", texture );
     }
 	

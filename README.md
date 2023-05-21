@@ -18,7 +18,10 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Improve looks
+* Improve looks slightly more
+* Add weather graphic (image) to weather widget
+* Make weather widget a part of timing tower widget
+* Make timing tower disappear on formation lap
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Look into timer class for race control widget visibility automatic toggling (not very high priority)
 * Make it so that the session status row briefly turns green at every green flag (low priority)

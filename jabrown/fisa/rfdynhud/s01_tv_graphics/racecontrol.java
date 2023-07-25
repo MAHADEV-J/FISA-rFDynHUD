@@ -214,7 +214,7 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
-    	visible = false;
+    	//visible = false;
     	//visible = super.updateVisibility(gameData, isEditorMode);
     	Boolean bongo = false;
     	

@@ -123,8 +123,13 @@ public class racecontrol extends Widget
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
     	currentSector = new FloatValue();
-        dsCaption = drawnStringFactory.newDrawnString( "dsCaption", 240, 24, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", 240, 60, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	int aspectRatioOffset = 160;
+    	int padding = 4;
+    	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
+    	int flagHeight = (5 * height) / 12;
+    	int flagWidth = (3 * flagHeight / 2);
+        dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioOffset + padding + flagWidth + padding + margin + 3, margin / 2, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", aspectRatioOffset + padding + flagWidth + padding + margin, 2 * margin + padding, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
     	captionText = "RACE CONTROL";
     	scOut = "SAFETY CAR";
     	scIn = "SAFETY CAR IN THIS LAP";
@@ -210,6 +215,7 @@ public class racecontrol extends Widget
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
     	visible = false;
+    	//visible = super.updateVisibility(gameData, isEditorMode);
     	Boolean bongo = false;
     	
         ScoringInfo scoringInfo = gameData.getScoringInfo();
@@ -272,10 +278,14 @@ public class racecontrol extends Widget
     	Rect2i rectangle = new Rect2i(offsetX, offsetY, width, height);
     	textureCanvas.fillRect(rectangle);
     
+    	int aspectRatioOffset = 80;
+    	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
+    	int padding = 4;
+    	
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
-    	int flagOffsetX = offsetX + 28;
-    	int flagOffsetY = offsetY + 28;
+    	int flagOffsetX = offsetX + aspectRatioOffset + padding;
+    	int flagOffsetY = offsetY + 2 * margin;
     	Rect2i flag = new Rect2i(flagOffsetX, flagOffsetY, flagWidth, flagHeight);
     	
     	if(informationToShow == 0)

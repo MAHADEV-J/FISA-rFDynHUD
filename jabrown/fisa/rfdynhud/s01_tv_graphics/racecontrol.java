@@ -242,7 +242,13 @@ public class racecontrol extends Widget
         	ToggleRedFlag();
 //        	bongo = true;
         }
-//        
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
+        {
+        	informationToShow = 5;
+        	toggleInformationText("NOT SPECIFIED");
+        	forceCompleteRedraw(true);
+        }
+        
 //        visible = true;
     	return true;
         

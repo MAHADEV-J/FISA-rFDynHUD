@@ -218,16 +218,16 @@ public class racecontrol extends Widget
     	//visible = super.updateVisibility(gameData, isEditorMode);
 //    	Boolean bongo = false;
 //    	
-//        ScoringInfo scoringInfo = gameData.getScoringInfo();
+        ScoringInfo scoringInfo = gameData.getScoringInfo();
 //    	
-//        if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
-//        {
-//        	ToggleSafetyCarOut();
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
+        {
+        	ToggleSafetyCarOut();
 //        	bongo = true;	
-//        }
-//        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
-//        {
-//        	ToggleSafetyCarIn();
+        }
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
+        {
+        	ToggleSafetyCarIn();
 //        	if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
 //        	{
 //            	bongo = true;	
@@ -236,12 +236,12 @@ public class racecontrol extends Widget
 //        	{
 //        		bongo = false;
 //        	}
-//        }
-//        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
-//        {
-//        	ToggleRedFlag();
+        }
+        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        {
+        	ToggleRedFlag();
 //        	bongo = true;
-//        }
+        }
 //        
 //        visible = true;
     	return true;

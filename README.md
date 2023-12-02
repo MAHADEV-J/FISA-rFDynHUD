@@ -12,14 +12,16 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 * you distribute it in an OPEN-SOURCE way, i.e. you always include the full source code in your distribution.
 
 ## Known bugs
-* When the race control widget is on and a safety car comes out, the game crashes. This is probably caused by some faulty logic in the code that determines when the widget appears and disappears.
+* Previously, when the race control widget was on and a safety car came out, the game crashes. This was probably caused by some faulty logic in the code that determines when the widget appears and disappears. I'm currently debugging this; with the latest modifications, it doesn't seem to happen all the time anymore. Yet, the game still crashes occasionally. Not sure why (spike in GPU = too much happening on screen all at once? Or maybe when pit stop and safety car happen at the same time and it chokes somehow?)
 * The gap to leader in the timing tower widget only updates once per sector - EXCEPT on the formation lap, where it updates constantly. Updating constantly is what I want it to do. But it seems that this is possibly how the rFactor API works.
 * For lapped cars, the number of laps they are down is not always shown correctly. Most of the time it's too low. This is because of a bug in the code of rFDynHUD itself. This is the best I could do to make a workaround for that bug. My only hope of getting it to show correctly now is to look into the code of some of Ákos Fődi's F1 TV graphics widget sets to see if there's a solution in there that will make it work. But I'm not counting on it.
 * When cars finish making their pit stop and drive away slowly, sometimes the gap to leader part of the timing tower flashes "PIT STOP" instead of "IN PIT" for a split second. This is probably because the rFDynHUD API determines whether a car is pitting based on whether or not it is stationary, so if a car stops to let another car past, rFDynHUD thinks it's pitting. There's probably not much that can be done about this, but then again it doesn't really matter.\
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Fix race control widget so that it doesn't make the game crash
+* Deepen investigation into what is causing the game to crash sometimes
+* Add green flag icon and text to race control widget for when race goes green
+* Add yellow-green flag icon to race control widget for safety car inlap
 * Make race control widget appear or disappear under the right conditions
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Make it so that the session status row briefly turns green at every green flag (low priority)

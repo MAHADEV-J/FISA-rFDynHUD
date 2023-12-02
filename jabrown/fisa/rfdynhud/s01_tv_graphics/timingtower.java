@@ -329,6 +329,8 @@ public class timingtower extends Widget
     @Override
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
+    	return true;
+    	
         //super.updateVisibility( gameData, isEditorMode );
         Boolean result = true;
         Boolean bongo = true;

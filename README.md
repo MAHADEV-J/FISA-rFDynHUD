@@ -20,9 +20,8 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 
 ## To-do list
 * Deepen investigation into what is causing the game to crash sometimes
-* Add green flag icon and text to race control widget for when race goes green
-* Add yellow-green flag icon to race control widget for safety car inlap
 * Make race control widget appear or disappear under the right conditions
+* See if you can fix the yellow-green flag image not showing on safety car inlap (not that important); until that works, just display yellow flag image instead
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Make it so that the session status row briefly turns green at every green flag (low priority)
 * Show a flag icon next to the name of drivers who have finished (low priority)

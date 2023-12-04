@@ -2,7 +2,10 @@ package jabrown.fisa.rfdynhud.s01_tv_graphics;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import org.openmali.types.twodee.Rect2i;
 
@@ -38,6 +41,8 @@ public class racecontrol extends Widget
     private String scOut = "";
     private String scIn = "";
     private String redFlag = "";
+    private String greenFlag = "";
+    private File goingGreen = new File("");
     private final FontProperty largeFont = new FontProperty("LargeFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_LARGE_FONT.getKey());
     private final FontProperty captionFont = new FontProperty("CaptionFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_CAPTION_FONT.getKey());
     private final FontProperty smallFont = new FontProperty("SmallFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_SMALL_FONT.getKey());
@@ -134,6 +139,8 @@ public class racecontrol extends Widget
     	scOut = "SAFETY CAR";
     	scIn = "SAFETY CAR IN THIS LAP";
     	redFlag = "RACE STOPPED";
+    	greenFlag = "GREEN FLAG";
+    	goingGreen = new File("fisa/goinggreen.png");
     	switch (informationToShow)
     	{
     		case 0:
@@ -144,6 +151,9 @@ public class racecontrol extends Widget
     			break;
     		case 2:
     			informationText = redFlag;
+    			break;
+    		case 3:
+    			informationText = greenFlag;
     			break;
     		default:
     			informationText = "NOT SPECIFIED";
@@ -244,8 +254,14 @@ public class racecontrol extends Widget
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
         {
-        	informationToShow = 5;
-        	toggleInformationText("NOT SPECIFIED");
+        	informationToShow = 3;
+        	toggleInformationText(greenFlag);
+        	forceCompleteRedraw(true);
+        }
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
+        {
+        	informationToShow = 3;
+        	toggleInformationText(greenFlag);
         	forceCompleteRedraw(true);
         }
         
@@ -303,9 +319,27 @@ public class racecontrol extends Widget
     		textureCanvas.setColor(Color.YELLOW);
         	textureCanvas.fillRect(flag);
     	}
+    	else if(informationToShow == 1)
+    	{
+    		//perhaps if this fails because the file is not found, we get an error or the game crashes.
+    		//so this file MUST be in "Plugins/rfDynHUD/config/data/images/fisa"
+    		textureCanvas.setColor(Color.GREEN);
+    		textureCanvas.fillRect(flag);
+    		try {
+				Image yellowGreenFlag = ImageIO.read(goingGreen);
+				textureCanvas.drawImage(yellowGreenFlag, flagOffsetX, flagOffsetY, flagWidth, flagHeight);
+			} catch (IOException e) {
+				//e.printStackTrace();
+			}
+    	}
     	else if(informationToShow == 2)
     	{
     		textureCanvas.setColor(Color.RED);
+    		textureCanvas.fillRect(flag);
+    	}
+    	else if(informationToShow == 3)
+    	{
+    		textureCanvas.setColor(new Color(0, 204, 0, 255));
     		textureCanvas.fillRect(flag);
     	}
     	else

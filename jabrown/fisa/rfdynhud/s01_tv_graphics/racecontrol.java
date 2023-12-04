@@ -224,7 +224,7 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
-    	//visible = false;
+    	visible = false;
     	//visible = super.updateVisibility(gameData, isEditorMode);
 //    	Boolean bongo = false;
 //    	
@@ -234,6 +234,7 @@ public class racecontrol extends Widget
         {
         	ToggleSafetyCarOut();
 //        	bongo = true;	
+        	visible = true;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
@@ -246,27 +247,30 @@ public class racecontrol extends Widget
 //        	{
 //        		bongo = false;
 //        	}
+        	visible = true;
         }
         if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
         	ToggleRedFlag();
 //        	bongo = true;
+        	visible = true;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
         {
         	informationToShow = 3;
         	toggleInformationText(greenFlag);
         	forceCompleteRedraw(true);
+        	visible = true;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
         {
         	informationToShow = 3;
         	toggleInformationText(greenFlag);
         	forceCompleteRedraw(true);
+        	visible = false;
         }
         
 //        visible = true;
-    	return true;
         
 //        if (bongo == true)
 //        {
@@ -285,12 +289,12 @@ public class racecontrol extends Widget
 //        }
 
         
-//    	if(visible == true || isEditorMode)
-//    	{
-//    		return true;
-//    	}
-//    	
-//    	return false;
+    	if(visible == true || isEditorMode)
+    	{
+    		return true;
+    	}
+    	
+    	return false;
     }
     
     @Override

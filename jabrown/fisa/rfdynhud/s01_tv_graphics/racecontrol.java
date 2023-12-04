@@ -323,11 +323,10 @@ public class racecontrol extends Widget
     	{
     		//perhaps if this fails because the file is not found, we get an error or the game crashes.
     		//so this file MUST be in "Plugins/rfDynHUD/config/data/images/fisa"
-    		textureCanvas.setColor(Color.GREEN);
-    		textureCanvas.fillRect(flag);
     		try {
 				Image yellowGreenFlag = ImageIO.read(goingGreen);
 				textureCanvas.drawImage(yellowGreenFlag, flagOffsetX, flagOffsetY, flagWidth, flagHeight);
+	    		textureCanvas.fillRect(flag);
 			} catch (IOException e) {
 				//e.printStackTrace();
 			}

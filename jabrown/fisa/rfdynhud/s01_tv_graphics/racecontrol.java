@@ -243,7 +243,14 @@ public class racecontrol extends Widget
         	{
         		ToggleSafetyCarOut();
         	}
-        	visible = true;
+        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
+        	//{
+            	visible = true;
+        	//}
+        	//else
+        	//{
+        		//visible = false;
+        	//}
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
@@ -251,15 +258,14 @@ public class racecontrol extends Widget
         	{
         		ToggleSafetyCarIn();
         	}
-//        	if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
-//        	{
-//            	bongo = true;	
-//        	}
-//        	else
-//        	{
-//        		bongo = false;
-//        	}
-        	visible = true;
+        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
+        	//{
+            	visible = true;	
+        	//}
+        	//else
+        	//{
+        		//visible = false;
+        	//}
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
         {
@@ -270,6 +276,7 @@ public class racecontrol extends Widget
             	forceCompleteRedraw(true);	
         	}
         	visible = true;
+        	//visible = false;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
         {
@@ -290,31 +297,13 @@ public class racecontrol extends Widget
 //        	bongo = true;
         	visible = true;
         }
-        
-//        visible = true;
-        
-//        if (bongo == true)
-//        {
-//        	//disappearTime = gameData.getScoringInfo().getSessionTime() + visibleTime;
-//        	visible = true;
-//        	forceCompleteRedraw(true);
-//        }
-        
-//        if (gameData.getScoringInfo().getSessionTime() < disappearTime)
-//        {
-//        	visible = true;
-//        }
-//        else
-//        {
-//        	visible = false;
-//        }
 
     	if (visible == true || isEditorMode)
     	{
     		return true;
     	}
     	
-    	return false;
+    	return false;git s
     }
     
     @Override

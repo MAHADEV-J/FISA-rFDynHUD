@@ -438,9 +438,9 @@ public class timingtower extends Widget
                             texGainedPlaces = imgNeutral.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
                     
                     //texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*(i+1), true, null );
-                    texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth(), offsetY+rowHeight*(i+1), true, null );
-                    
-                    
+
+                            texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth(), offsetY+rowHeight*(i+1), true, null );        
+                                       
                 //}
             }
         }

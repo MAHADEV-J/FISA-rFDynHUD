@@ -19,6 +19,8 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
+* Fix timing tower visibility conditions (HIGH PRIORITY)
+* Fix issue with timing tower session status row (the one that says "LAP X / X") not being the correct width (not very important)
 * Deepen investigation into what is causing the game to crash sometimes
 * See if you can fix the yellow-green flag image not showing on safety car inlap (not that important); until that works, just display yellow flag image instead
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)

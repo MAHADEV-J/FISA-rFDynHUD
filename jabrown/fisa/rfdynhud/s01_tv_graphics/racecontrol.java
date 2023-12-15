@@ -303,7 +303,7 @@ public class racecontrol extends Widget
     		return true;
     	}
     	
-    	return false;git s
+    	return false;
     }
     
     @Override

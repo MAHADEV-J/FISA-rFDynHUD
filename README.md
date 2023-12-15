@@ -20,13 +20,13 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 
 ## To-do list
 * Deepen investigation into what is causing the game to crash sometimes
-* Make race control widget appear or disappear under the right conditions
 * See if you can fix the yellow-green flag image not showing on safety car inlap (not that important); until that works, just display yellow flag image instead
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
+* Look into timer class for race control widget visibility automatic toggling (not very high priority)
 * Make it so that the session status row briefly turns green at every green flag (low priority)
 * Show a flag icon next to the name of drivers who have finished (low priority)
-* Add an area to the timing tower that becomes visible during pit stops and shows how long the pit stop is (optional, very low priority)
 * Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)
+* Add an area to the timing tower that becomes visible during pit stops and shows how long the pit stop is (optional, very low priority)
 * Get rid of "magic numbers" throughout the code (i.e., create more variables)
 
 ## Changelog
@@ -34,7 +34,7 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 * Branch "sessionstatus": added a row for session status to the widget.
 * Branch "pitstop": made the timing row update with the text "IN PIT" when a car is in the pitlane but not pitting, and "PIT STOP" when the car is actually pitting.\
 For more information, see the commit history.
-* Branch "racecontrol": added a new widget that displays messages from race control.
+* Branch "racecontrol": added a new widget that displays messages from race control. It can display three different messages: "SAFETY CAR" (when the safety car comes out); "SAFETY CAR IN THIS LAP" (on the last lap the safety car is out); and "RACE STOPPED" (currently only when it rains on ovals). It displays these messages automatically. When these messages appear, the timing tower widget disappears, and when they disappear, it appears again.
 
 ### old changes below
 Previously, all these changes were stored as comments in the file timingtower.java. I'm adding them all to this readme so I can remove them from there. It was about time I added version control as a better way to track changes.

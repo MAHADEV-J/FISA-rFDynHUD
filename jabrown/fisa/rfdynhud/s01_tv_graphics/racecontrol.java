@@ -26,6 +26,7 @@ import net.ctdp.rfdynhud.render.TextureImage2D;
 import net.ctdp.rfdynhud.util.PropertyWriter;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
+import net.ctdp.rfdynhud.values.IntValue;
 import net.ctdp.rfdynhud.values.FloatValue;
 import net.ctdp.rfdynhud.widgets.base.widget.Widget;
 
@@ -55,6 +56,8 @@ public class racecontrol extends Widget
     private Boolean visible = false;
     private int informationToShow = 5;
     private FloatValue currentSector = null;
+    private IntValue lapsUnderSafetyCar = null;
+    private Boolean thisLapSCCounted = false;
     
     public racecontrol()
     {
@@ -141,6 +144,7 @@ public class racecontrol extends Widget
     	redFlag = "RACE STOPPED";
     	greenFlag = "GREEN FLAG";
     	goingGreen = new File("fisa/goinggreen.png");
+    	lapsUnderSafetyCar = new IntValue(0);
     	switch (informationToShow)
     	{
     		case 0:
@@ -224,83 +228,91 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
-//    	Boolean bongo = false;
-//    	
-        ScoringInfo scoringInfo = gameData.getScoringInfo();
-//    	
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
-        {
-        	if (informationToShow != 0)
-        	{
-        		ToggleSafetyCarOut();
-        	}
-//        	bongo = true;	
-        	visible = true;
-        }
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP)
-        {
-        	if (informationToShow != 0)
-        	{
-        		ToggleSafetyCarOut();
-        	}
-        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
-        	//{
-            	visible = true;
-        	//}
-        	//else
-        	//{
-        		//visible = false;
-        	//}
-        }
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
-        {
-        	if (informationToShow != 1)
-        	{
-        		ToggleSafetyCarIn();
-        	}
-        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
-        	//{
-            	visible = true;	
-        	//}
-        	//else
-        	//{
-        		//visible = false;
-        	//}
-        }
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
-        {
-        	if (informationToShow != 3)
-        	{
-            	informationToShow = 3;
-            	toggleInformationText(greenFlag);
-            	forceCompleteRedraw(true);	
-        	}
-        	visible = true;
-        	//visible = false;
-        }
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
-        {
-        	if(informationToShow != 3)
-        	{
-            	informationToShow = 3;
-            	toggleInformationText(greenFlag);
-            	forceCompleteRedraw(true);	
-        	}
-        	visible = false;
-        }
-        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
-        {
-        	if(informationToShow != 2)
-        	{
-            	ToggleRedFlag();	
-        	}
-//        	bongo = true;
-        	visible = true;
-        }
+    	ScoringInfo scoringInfo = gameData.getScoringInfo();
 
-    	if (visible == true || isEditorMode)
-    	{
-    		return true;
+    	float sector1Length = gameData.getTrackInfo().getTrack().getSector1Length();
+    	//float sector2Length = gameData.getTrackInfo().getTrack().getSector2Length(true);
+    	float lapDistance = scoringInfo.getLeadersVehicleScoringInfo().getLapDistance();
+
+    	if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING) {
+    	   if (informationToShow != 0) {
+    	       ToggleSafetyCarOut();
+    	   }
+    	   visible = true;
+    	}
+    	if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP) {
+    	   if (informationToShow != 0) {
+    	       ToggleSafetyCarOut();
+    	   }
+    	   visible = true;
+    	}
+    	if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP) {
+    	   if (informationToShow != 1) {
+    	       ToggleSafetyCarIn();
+    	   }
+    	   visible = true;
+    	}
+    	if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME) {
+    	   if (informationToShow != 3) {
+    	       informationToShow = 3;
+    	       toggleInformationText(greenFlag);
+    	       forceCompleteRedraw(true);	
+    	   }
+    	   if (lapsUnderSafetyCar.getValue() != 0)
+    	   {
+        	   lapsUnderSafetyCar.update(0);   
+    	   }
+    	   visible = false;
+    	}
+    	if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG) {
+    	   if(informationToShow != 3) {
+    	       informationToShow = 3;
+    	       toggleInformationText(greenFlag);
+    	       forceCompleteRedraw(true);	
+    	   }
+    	   visible = false;
+    	}
+    	if (scoringInfo.getOnPathWetness() >= 0.5f) { //when it's raining on ovals
+    	   if(informationToShow != 2) {
+    	       ToggleRedFlag();	
+    	   }
+    	   visible = true;
+    	}
+
+    	// Check if the lead car has completed sector one
+    	if (visible == true) {
+    		if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING || informationToShow == 2)
+    		{
+    			return true;
+    		}
+    		else
+    		{
+    			if (lapDistance < sector1Length)
+        		{
+    				if (thisLapSCCounted == false)
+    				{
+            			lapsUnderSafetyCar.update(lapsUnderSafetyCar.getValue() + 1);
+            			thisLapSCCounted = true;
+    				}
+    				if (lapsUnderSafetyCar.getValue() < 2 || scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
+    				{
+            			return true;	
+    				}
+    				return false;
+        		}
+        		else
+        		{
+        			if (thisLapSCCounted == true)
+        			{
+            			thisLapSCCounted = false;	
+        			}
+        			return false;
+        		}
+    		}
+    	}
+
+    	if (isEditorMode) {
+    	   return true;
     	}
     	
     	return false;

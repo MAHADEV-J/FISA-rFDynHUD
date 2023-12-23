@@ -384,10 +384,11 @@ public class timingtower extends Widget
         
         if (visible == false)
         {
+			forceCompleteRedraw(true);
         	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
-        	if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING || informationToShow == 2)
+        	if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING || scoringInfo.getOnPathWetness() >= 0.5f)
     		{
-    			return false;;
+    			return false;
     		}
         	else
         	{
@@ -404,13 +405,18 @@ public class timingtower extends Widget
     				}
     				return true;
         		}
-    			forceCompleteRedraw(true);
-    			return false;
+    			else
+    			{
+	    			if (thisLapSCCounted == true)
+	    			{
+	        			thisLapSCCounted = false;	
+	    			}
+	    			return true;
+    			}
         	}
-        
-        return true;
         }
         
+        return true;
     }
     @Override
     protected void drawBackground( LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height, boolean isRoot )

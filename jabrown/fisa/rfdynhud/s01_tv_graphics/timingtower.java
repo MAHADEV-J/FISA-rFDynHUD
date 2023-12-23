@@ -78,6 +78,9 @@ public class timingtower extends Widget
     private float hideTime = -1f;
     private static final InputAction ToggleGapsOrStops = new InputAction ("ToggleGapsOrStops", false); //defines an input action
     private FloatValue currentSector = new FloatValue();
+    private Boolean visible = true;
+    private IntValue lapsUnderSafetyCar = null;
+    private Boolean thisLapSCCounted = false;
    
     @Override
     public void onRealtimeEntered( LiveGameData gameData, boolean isEditorMode )
@@ -331,23 +334,26 @@ public class timingtower extends Widget
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
         //super.updateVisibility( gameData, isEditorMode );
-        Boolean result = true;
-        Boolean bongo = true;
+        //Boolean result = true;
+        //Boolean bongo = true;
         
         ScoringInfo scoringInfo = gameData.getScoringInfo();
+        
+    	float sector1Length = gameData.getTrackInfo().getTrack().getSector1Length();
+    	float lapDistance = scoringInfo.getLeadersVehicleScoringInfo().getLapDistance();
         
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
         FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
         
         if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
         {
-        	bongo = false;
+        	visible = false;
         }
         if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP)
         {
         	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
         	//{
-            	bongo = false;	
+            	visible = false;	
         	//}
         	//else
         	//{
@@ -359,7 +365,7 @@ public class timingtower extends Widget
         	//leaving this in here in case we want to go back to it later
         	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
         	//{
-            	bongo = false;	
+            	visible = false;	
         	//}
         	//else
         	//{
@@ -368,22 +374,42 @@ public class timingtower extends Widget
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
         {
-        	bongo = false;
+        	visible = true;
         	//bongo = true;
         }
         if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
-        	bongo = false;
+        	visible = false;
         }
         
-        if (bongo == false)
+        if (visible == false)
         {
         	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
-        	result = false;
-        	forceCompleteRedraw(true);
-        }
+        	if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING || informationToShow == 2)
+    		{
+    			return false;;
+    		}
+        	else
+        	{
+    			if (lapDistance < sector1Length)
+        		{
+    				if (thisLapSCCounted == false)
+    				{
+            			lapsUnderSafetyCar.update(lapsUnderSafetyCar.getValue() + 1);
+            			thisLapSCCounted = true;
+    				}
+    				if (lapsUnderSafetyCar.getValue() < 2 || scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
+    				{
+            			return false;	
+    				}
+    				return true;
+        		}
+    			forceCompleteRedraw(true);
+    			return false;
+        	}
         
-        return result;
+        return true;
+        }
         
     }
     @Override

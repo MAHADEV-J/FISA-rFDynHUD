@@ -560,6 +560,13 @@ public class timingtower extends Widget
         	statusFontColor = fontColor2.getColor();
         	forceCompleteRedraw(true);
         }
+        //if going green after caution: white on green
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
+        {
+        	statusColor = new Color(0, 204, 0, 255);
+        	statusFontColor = fontColor2.getColor();
+        	forceCompleteRedraw(true);
+        }
         //if race stopped: white on red
         if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
         {

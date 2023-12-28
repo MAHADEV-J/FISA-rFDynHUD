@@ -296,7 +296,7 @@ public class racecontrol extends Widget
     				}
     				if (lapsUnderSafetyCar.getValue() < 2 || scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
     				{
-            			return true;	
+            			return true;
     				}
     				return false;
         		}

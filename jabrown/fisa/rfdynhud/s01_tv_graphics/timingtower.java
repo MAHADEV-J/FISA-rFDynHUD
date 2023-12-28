@@ -12,6 +12,7 @@ import net.ctdp.rfdynhud.gamedata.GamePhase;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.SessionLimit;
+import net.ctdp.rfdynhud.gamedata.SessionType;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
 import net.ctdp.rfdynhud.gamedata.VehicleState;
 import net.ctdp.rfdynhud.gamedata.YellowFlagState;
@@ -27,6 +28,7 @@ import net.ctdp.rfdynhud.render.DrawnString.Alignment;
 import net.ctdp.rfdynhud.render.DrawnStringFactory;
 import net.ctdp.rfdynhud.render.TextureImage2D;
 import net.ctdp.rfdynhud.util.PropertyWriter;
+import net.ctdp.rfdynhud.util.RFDHLog;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
 import net.ctdp.rfdynhud.values.FloatValue;
@@ -101,9 +103,19 @@ public class timingtower extends Widget
     }
     
     @Override
+    public void onSessionStarted(SessionType sessionType, LiveGameData gameData, boolean isEditorMode)
+    {
+    	log("Hello, session has started");
+    	RFDHLog.print("Hello, session has started!");
+    }
+    
+    @Override
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
     	currentSector = new FloatValue();
+    	lapsUnderSafetyCar = new IntValue(0);
+    	RFDHLog.setIndentationString("Timing tower: ");
+    	RFDHLog.debug("Laps under safety car: " + lapsUnderSafetyCar.getValueAsString());
     	
         int maxNumItems = numVeh.getValue();
         dsPos = new DrawnString[maxNumItems];
@@ -138,7 +150,6 @@ public class timingtower extends Widget
             
             top += rowHeight;
         }
-        
         
     }
     private void clearArrayValues(int maxNumCars)
@@ -331,6 +342,14 @@ public class timingtower extends Widget
     }
     
     @Override
+    public void onScoringInfoUpdated(LiveGameData gameData, boolean isEditorMode)
+    {
+        ScoringInfo scoringInfo = gameData.getScoringInfo();
+        clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
+        FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
+    }
+    
+    @Override
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
         //super.updateVisibility( gameData, isEditorMode );
@@ -374,9 +393,16 @@ public class timingtower extends Widget
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
         {
+     	   if (lapsUnderSafetyCar.getValue() != 0)
+     	   {
+         	   lapsUnderSafetyCar.update(0);   
+     	   }
         	visible = true;
         	//bongo = true;
         }
+    	if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG) {
+     	   visible = true;
+     	}
         if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
         	visible = false;
@@ -384,7 +410,6 @@ public class timingtower extends Widget
         
         if (visible == false)
         {
-			forceCompleteRedraw(true);
         	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
         	if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING || scoringInfo.getOnPathWetness() >= 0.5f)
     		{

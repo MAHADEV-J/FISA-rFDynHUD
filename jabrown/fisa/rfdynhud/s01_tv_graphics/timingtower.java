@@ -230,10 +230,6 @@ public class timingtower extends Widget
                     	}
                     	break;
                     default: //gaps
-                            if(vsi.getFinishStatus() == FinishStatus.DNF)
-                            {
-                            	gaps[i].update("OUT");
-                            }
                             if(vsi.getLapsBehindLeader(false) == 0 || isEditorMode)
                             {
                             	DecimalFormat decimalFormat = new DecimalFormat("0.000");
@@ -279,6 +275,7 @@ public class timingtower extends Widget
                             	}
                             }
                             
+                            gaps[0].update("Leader");
                             //another loop to show when a car is in the pits
                             if (VehicleState.get(vsi, 0).isInPitlane())
                             {
@@ -288,7 +285,10 @@ public class timingtower extends Widget
                             {
                             	gaps[i].update("PIT STOP");
                             }
-                            gaps[0].update("Leader");
+                            if(vsi.getFinishStatus() == FinishStatus.DNF && vsi.getPlace(false) != 1)
+                            {
+                            	gaps[i].update("OUT");
+                            }
                             if(scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
                             {
                             	gaps[0].update("Winner");

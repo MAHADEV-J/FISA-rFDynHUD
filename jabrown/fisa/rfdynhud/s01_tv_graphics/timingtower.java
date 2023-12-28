@@ -230,6 +230,10 @@ public class timingtower extends Widget
                     	}
                     	break;
                     default: //gaps
+                            if(vsi.getFinishStatus() == FinishStatus.DNF)
+                            {
+                            	gaps[i].update("OUT");
+                            }
                             if(vsi.getLapsBehindLeader(false) == 0 || isEditorMode)
                             {
                             	DecimalFormat decimalFormat = new DecimalFormat("0.000");
@@ -275,7 +279,6 @@ public class timingtower extends Widget
                             	}
                             }
                             
-                            gaps[0].update("Leader");
                             //another loop to show when a car is in the pits
                             if (VehicleState.get(vsi, 0).isInPitlane())
                             {
@@ -285,10 +288,7 @@ public class timingtower extends Widget
                             {
                             	gaps[i].update("PIT STOP");
                             }
-                            if(vsi.getFinishStatus() == FinishStatus.DNF && vsi.getPlace(false) != 1)
-                            {
-                            	gaps[i].update("OUT");
-                            }
+                            gaps[0].update("Leader");
                             if(scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() >= scoringInfo.getMaxLaps() || scoringInfo.getGamePhase() == GamePhase.SESSION_OVER)
                             {
                             	gaps[0].update("Winner");
@@ -538,13 +538,6 @@ public class timingtower extends Widget
         //Loop to determine session status row font and background colours depending on flag
         //----------------------------------------------------------------------------------
         Color statusFontColor = fontColor2.getColor();
-        //if going green after caution: white on green
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
-        {
-        	statusColor = new Color(0, 204, 0, 255);
-        	statusFontColor = fontColor2.getColor();
-        	forceCompleteRedraw(true);
-        }
         //if final lap: black on white
         if (scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps()) 
         {
@@ -559,6 +552,7 @@ public class timingtower extends Widget
         	statusFontColor = Color.BLACK;
         	forceCompleteRedraw(true); //apparently this is necessary
 		}
+        //TODO: add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
         //if finished or normal: white on grey
         if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED || (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG && scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() != scoringInfo.getMaxLaps()))
         {
@@ -567,7 +561,7 @@ public class timingtower extends Widget
         	forceCompleteRedraw(true);
         }
         //if race stopped: white on red
-        if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED || scoringInfo.getYellowFlagState() == YellowFlagState.RACE_HALT || scoringInfo.getOnPathWetness() >= 0.5f)
+        if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
         {
         	statusColor = Color.RED;
         	statusFontColor = fontColor2.getColor();

@@ -94,15 +94,15 @@ public class weather extends Widget {
         int lineHeight = TextureImage2D.getStringHeight( "0%C", getFontProperty() );
         int padding = 4;
         if(rainingSeverity.getValue() > 0.3f || isEditorMode)
-            texture.clear( imgThunderstorms.getTexture(), offsetX + padding, offsetY + padding, false, null );
+            texture.drawImage( imgThunderstorms.getTexture(), offsetX + padding, offsetY + padding, false, null );
         else if(rainingSeverity.getValue() > 0.02f)
-            texture.clear( imgDrizzle.getTexture(), offsetX + padding, offsetY + padding, false, null );
+            texture.drawImage( imgDrizzle.getTexture(), offsetX + padding, offsetY + padding, false, null );
         else if(rainingSeverity.getValue() > 0.0f)
-            texture.clear( imgSlightDrizzle.getTexture(), offsetX + padding, offsetY + padding, false, null );
+            texture.drawImage( imgSlightDrizzle.getTexture(), offsetX + padding, offsetY + padding, false, null );
         else if(cloudDarkness.getValue() > 0.8f)
-            texture.clear( imgDark.getTexture(), offsetX + padding, offsetY + padding, false, null );
+            texture.drawImage( imgDark.getTexture(), offsetX + padding, offsetY + padding, false, null );
         else
-            texture.clear( imgSunny.getTexture(), offsetX + padding, offsetY + padding, false, null );
+            texture.drawImage( imgSunny.getTexture(), offsetX + padding, offsetY + padding, false, null );
     }
     
     @Override

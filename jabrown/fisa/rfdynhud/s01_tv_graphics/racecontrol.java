@@ -288,7 +288,7 @@ public class racecontrol extends Widget
         	}
         	visible = false;
         }
-        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        if (scoringInfo.getOnPathWetness() >= 0.2f) //when it's raining on ovals
         {
         	if(informationToShow != 2)
         	{

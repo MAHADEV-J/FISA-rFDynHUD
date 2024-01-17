@@ -371,7 +371,7 @@ public class timingtower extends Widget
         	bongo = false;
         	//bongo = true;
         }
-        if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
+        if (scoringInfo.getOnPathWetness() >= 0.2f) //when it's raining on ovals
         {
         	bongo = false;
         }

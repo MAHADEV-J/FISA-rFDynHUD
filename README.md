@@ -19,6 +19,7 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
+* Fix issue with "OUT" not showing correctly in timing tower (HIGH PRIORITY)
 * Improve looks slightly more by adding offset properties to race control widget just like weather widget
 * Create a new widget for fastest lap (figure out how to make this disappear)
 * Make weather widget a part of timing tower widget (medium low priority)

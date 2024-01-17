@@ -19,7 +19,8 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Improve looks slightly more by adding offsetX and offsetY properties for text
+* Improve looks slightly more by adding offset properties to race control widget just like weather widget
+* Create a new widget for fastest lap (figure out how to make this disappear)
 * Make weather widget a part of timing tower widget (medium low priority)
 * Make timing tower disappear on formation lap (low priority)
 * Deepen investigation into what is causing the game to crash sometimes
@@ -38,6 +39,7 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 * Branch "pitstop": made the timing row update with the text "IN PIT" when a car is in the pitlane but not pitting, and "PIT STOP" when the car is actually pitting.\
 For more information, see the commit history.
 * Branch "racecontrol": added a new widget that displays messages from race control. It can display three different messages: "SAFETY CAR" (when the safety car comes out); "SAFETY CAR IN THIS LAP" (on the last lap the safety car is out); and "RACE STOPPED" (currently only when it rains on ovals). It displays these messages automatically. When these messages appear, the timing tower widget disappears, and when they disappear, it appears again.
+* Branch "weather": added a new widget that shows the weather conditions and temperature.
 
 ### old changes below
 Previously, all these changes were stored as comments in the file timingtower.java. I'm adding them all to this readme so I can remove them from there. It was about time I added version control as a better way to track changes.

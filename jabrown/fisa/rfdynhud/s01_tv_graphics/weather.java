@@ -1,6 +1,7 @@
 package jabrown.fisa.rfdynhud.s01_tv_graphics;
 
 import java.awt.Font;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -8,10 +9,14 @@ import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_gr
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.properties.ImagePropertyWithTexture;
+import net.ctdp.rfdynhud.properties.IntProperty;
+import net.ctdp.rfdynhud.properties.PropertiesContainer;
+import net.ctdp.rfdynhud.properties.PropertyLoader;
 import net.ctdp.rfdynhud.render.DrawnStringFactory;
 import net.ctdp.rfdynhud.render.TextureImage2D;
 import net.ctdp.rfdynhud.render.DrawnString;
 import net.ctdp.rfdynhud.render.DrawnString.Alignment;
+import net.ctdp.rfdynhud.util.PropertyWriter;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
 import net.ctdp.rfdynhud.values.FloatValue;
@@ -32,6 +37,9 @@ public class weather extends Widget {
     private ImagePropertyWithTexture imgDrizzle = new ImagePropertyWithTexture("imgDrizzle", "prunn/rfe/Drizzle.png");
     private ImagePropertyWithTexture imgThunderstorms = new ImagePropertyWithTexture("imgDrizzle", "prunn/rfe/Thunderstorms.png");
     private ImagePropertyWithTexture imgDark = new ImagePropertyWithTexture("imgDrizzle", "prunn/rfe/Dark.png");
+    
+    private IntProperty fontyoffset = new IntProperty("Y Font Offset", 0);
+    private IntProperty fontxoffset = new IntProperty("X Font Offset", 0);
 	
     public weather()
     {
@@ -61,8 +69,8 @@ public class weather extends Widget {
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
     	int lineHeight = (int) ((int)TextureImage2D.getStringHeight( "0%C", getFontProperty() ) * 1.15);
-        dsTempC = drawnStringFactory.newDrawnString( "ds", width, 4, Alignment.RIGHT, false, getFont(), isFontAntiAliased(), getFontColor() );
-        dsTempF = drawnStringFactory.newDrawnString( "ds", width, 4+lineHeight, Alignment.RIGHT, false, getFont(), isFontAntiAliased(), getFontColor() );
+        dsTempC = drawnStringFactory.newDrawnString( "ds", width - fontxoffset.getValue(), fontyoffset.getValue(), Alignment.RIGHT, false, getFont(), isFontAntiAliased(), getFontColor() );
+        dsTempF = drawnStringFactory.newDrawnString( "ds", width - fontxoffset.getValue(), fontyoffset.getValue() + lineHeight, Alignment.RIGHT, false, getFont(), isFontAntiAliased(), getFontColor() );
     	decimalFormat.setRoundingMode(RoundingMode.HALF_EVEN);
         imgSunny.updateSize( width/2, height, isEditorMode );
         imgSlightDrizzle.updateSize( width/2, height, isEditorMode );
@@ -112,6 +120,34 @@ public class weather extends Widget {
     	int lineHeight = (int) ((int)TextureImage2D.getStringHeight( "0%C", getFontProperty() ) * 1.15);
         dsTempC.draw( offsetX, offsetY, String.valueOf(decimalFormat.format(scoringInfo.getAmbientTemperatureC())) + " °C", texture);
         dsTempF.draw( offsetX, offsetY, String.valueOf(decimalFormat.format(scoringInfo.getAmbientTemperatureF())) + " °F", texture);
+    }
+    
+    @Override
+    public void saveProperties( PropertyWriter writer ) throws IOException
+    {
+        super.saveProperties( writer );
+        
+        writer.writeProperty( fontyoffset, "" );
+        writer.writeProperty( fontxoffset, "" );
+    }
+    
+    @Override
+    public void loadProperty( PropertyLoader loader )
+    {
+        super.loadProperty( loader );
+        
+        if ( loader.loadProperty( fontyoffset ) );
+        else if ( loader.loadProperty( fontxoffset ) );
+    }
+    
+    @Override
+    public void getProperties( PropertiesContainer propsCont, boolean forceAll )
+    {
+        super.getProperties( propsCont, forceAll );
+        
+        propsCont.addGroup( "Font Displacement" );
+        propsCont.addProperty( fontyoffset );
+        propsCont.addProperty( fontxoffset );
     }
 	
 }

@@ -343,16 +343,33 @@ public class timingtower extends Widget
         {
         	bongo = false;
         }
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP)
+        {
+        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
+        	//{
+            	bongo = false;	
+        	//}
+        	//else
+        	//{
+        		//bongo = true;
+        	//}
+        }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
-        	if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
-        	{
+        	//leaving this in here in case we want to go back to it later
+        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
+        	//{
             	bongo = false;	
-        	}
-        	else
-        	{
-        		bongo = true;
-        	}
+        	//}
+        	//else
+        	//{
+        		//bongo = true;
+        	//}
+        }
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
+        {
+        	bongo = false;
+        	//bongo = true;
         }
         if (scoringInfo.getOnPathWetness() >= 0.5f) //when it's raining on ovals
         {
@@ -365,15 +382,6 @@ public class timingtower extends Widget
         	result = false;
         	forceCompleteRedraw(true);
         }
-        
-//        if (scoringInfo.getSessionTime() < appearTime)
-//        {
-//        	result = false;
-//        }
-//        else
-//        {
-//        	result = true;
-//        }
         
         return result;
         
@@ -438,9 +446,9 @@ public class timingtower extends Widget
                             texGainedPlaces = imgNeutral.getImage().getScaledTextureImage( width*38/100, rowHeight, texGainedPlaces, isEditorMode );
                     
                     //texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth() - width*8/100, offsetY+rowHeight*(i+1), true, null );
-                    texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth(), offsetY+rowHeight*(i+1), true, null );
-                    
-                    
+
+                            texture.drawImage( texGainedPlaces, offsetX + imgPos.getTexture().getWidth(), offsetY+rowHeight*(i+1), true, null );        
+                                       
                 //}
             }
         }
@@ -481,7 +489,7 @@ public class timingtower extends Widget
         	forceCompleteRedraw(true);
         }
         //if caution or local yellow: black on yellow
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3) || scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() == scoringInfo.getMaxLaps())
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
 		{
         	statusColor = Color.YELLOW;
         	statusFontColor = Color.BLACK;

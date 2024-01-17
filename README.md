@@ -19,8 +19,7 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Improve looks slightly more
-* Add weather graphic (image) to weather widget
+* Improve looks slightly more by adding offsetX and offsetY properties for text
 * Make weather widget a part of timing tower widget (medium low priority)
 * Make timing tower disappear on formation lap (low priority)
 * Deepen investigation into what is causing the game to crash sometimes

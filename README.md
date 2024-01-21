@@ -27,7 +27,6 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 * See if you can fix the yellow-green flag image not showing on safety car inlap (not that important); until that works, just display yellow flag image instead
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Look into timer class for race control widget visibility automatic toggling (not very high priority)
-* Make it so that the session status row briefly turns green at every green flag (low priority)
 * Show a flag icon next to the name of drivers who have finished (low priority)
 * Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)
 * Add an area to the timing tower that becomes visible during pit stops and shows how long the pit stop is (optional, very low priority)

@@ -16,6 +16,7 @@ import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FontProperty;
+import net.ctdp.rfdynhud.properties.IntProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
 import net.ctdp.rfdynhud.properties.PropertyLoader;
 import net.ctdp.rfdynhud.render.DrawnString;
@@ -55,6 +56,8 @@ public class racecontrol extends Widget
     private Boolean visible = false;
     private int informationToShow = 5;
     private FloatValue currentSector = null;
+    private IntProperty aspectRatioYOffset = new IntProperty("Y Offset (From Below)", 0);
+    private IntProperty aspectRatioXOffset = new IntProperty("X Offset", 0);
     
     public racecontrol()
     {
@@ -86,6 +89,8 @@ public class racecontrol extends Widget
         writer.writeProperty( largeFont, "Large font that is used for race control messages." );
         writer.writeProperty( captionFont, "Font that is used for race control message caption." );
         writer.writeProperty( smallFont, "Small font that is used for timing." );
+        writer.writeProperty( aspectRatioXOffset, "Flag X offset." );
+        writer.writeProperty( aspectRatioYOffset, "Flag Y offset (from below)." );
     }
     
     /**
@@ -99,6 +104,8 @@ public class racecontrol extends Widget
         if ( loader.loadProperty( largeFont ) );
         else if ( loader.loadProperty( captionFont ) );
         else if ( loader.loadProperty( smallFont ) );
+        else if ( loader.loadProperty( aspectRatioXOffset ) );
+        else if ( loader.loadProperty( aspectRatioYOffset ) );
     }
     
     /**
@@ -114,6 +121,8 @@ public class racecontrol extends Widget
         propsCont.addProperty(largeFont);
         propsCont.addProperty(captionFont);
         propsCont.addProperty(smallFont);
+        propsCont.addProperty( aspectRatioXOffset );
+        propsCont.addProperty( aspectRatioYOffset );
     }
     
     /**
@@ -128,13 +137,12 @@ public class racecontrol extends Widget
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
     	currentSector = new FloatValue();
-    	int aspectRatioOffset = 160;
     	int padding = 4;
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
-        dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioOffset + padding + flagWidth + padding + margin + 3, margin / 2, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", aspectRatioOffset + padding + flagWidth + padding + margin, 2 * margin + padding, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
+        dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioXOffset.getIntValue() + padding + flagWidth + padding + aspectRatioXOffset.getValue() + 3, height - (6 * margin - padding) - aspectRatioYOffset.getValue(), Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", aspectRatioXOffset.getValue() + padding + flagWidth + padding + aspectRatioXOffset.getValue(), height - 2 * margin - (flagHeight / 2) - aspectRatioYOffset.getValue(), Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
     	captionText = "RACE CONTROL";
     	scOut = "SAFETY CAR";
     	scIn = "SAFETY CAR IN THIS LAP";
@@ -317,14 +325,13 @@ public class racecontrol extends Widget
     	Rect2i rectangle = new Rect2i(offsetX, offsetY, width, height);
     	textureCanvas.fillRect(rectangle);
     
-    	int aspectRatioOffset = 80;
-    	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	int padding = 4;
+    	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
-    	int flagOffsetX = offsetX + aspectRatioOffset + padding;
-    	int flagOffsetY = offsetY + 2 * margin;
+    	int flagOffsetX = offsetX + aspectRatioXOffset.getValue() + padding;
+    	int flagOffsetY = (offsetY + height) - aspectRatioYOffset.getValue() - flagHeight - margin;
     	Rect2i flag = new Rect2i(flagOffsetX, flagOffsetY, flagWidth, flagHeight);
     	
     	if(informationToShow == 0)

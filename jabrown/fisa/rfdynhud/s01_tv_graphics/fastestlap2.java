@@ -223,24 +223,29 @@ public class fastestlap2 extends Widget
     	carModel = "TEST";
         if ( needsCompleteRedraw || laptime.hasChanged() )
         {
-        	driverName = fastestCar.getDriverNameShort();
+        	driverName = fastestCar.getDriverNameShort().toUpperCase();
+        	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
         	driverPos.update(fastestCar.getPlace(false));
         	if(fastestCar.getVehicleInfo() != null)
         	{
-        		carMake = fastestCar.getVehicleName();	
+            	teamName = driverData.split(";")[1];
+            	carMake = driverData.split(";")[3];
+            	carModel = driverData.split(";")[4];
         	}
         	else
         	{
+        		teamName = "TEAM";
         		carMake = "CAR";
         	}
         	if(isEditorMode)
         	{
+        		teamName = "EXTREMELY LONG SPONSOR NAME VERY LONG TEAM NAME MOTORSPORTS";
         		carMake = "MASERATI";
         		carModel = "QUATTROPORTE";
         	}
         	dsDriverPos.draw( offsetX, offsetY, driverPos.getValueAsString(), texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );
-            dsTeamName.draw(offsetX, offsetY, "TEAM", texture);
+            dsTeamName.draw(offsetX, offsetY, teamName, texture);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth(" ", captionFont), offsetY, carModel, texture, true);
         	dsCaption.draw( offsetX, offsetY, caption, texture );

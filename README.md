@@ -19,7 +19,9 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Create a new widget for fastest lap (figure out how to make this disappear)
+* Figure out how to make fastest lap widget (and by extension other widgets) disappear and reappear at the right moment
+* Improve looks of fastest lap widget by adding/changing font properties
+* Make it so that the leader's "position square" is red instead of grey
 * Make weather widget a part of timing tower widget (medium low priority)
 * Make timing tower disappear on formation lap (low priority)
 * Deepen investigation into what is causing the game to crash sometimes

@@ -94,9 +94,9 @@ public class fastestlap2 extends Widget
     {
         super.saveProperties( writer );
         
-        writer.writeProperty( largeFont, "Large font that is used for race control messages." );
-        writer.writeProperty( captionFont, "Font that is used for race control message caption." );
-        writer.writeProperty( smallFont, "Small font that is used for timing." );
+        writer.writeProperty( largeFont, "Large font that is used for position number." );
+        writer.writeProperty( captionFont, "Font that is used for driver name, car name, caption, and laptime." );
+        writer.writeProperty( smallFont, "Small font that is used for team name and car model." );
         writer.writeProperty( aspectRatioXOffset, "Flag X offset." );
         writer.writeProperty( aspectRatioYOffset, "Flag Y offset (from below)." );
     }
@@ -146,15 +146,17 @@ public class fastestlap2 extends Widget
     {
     	int padding = 4;
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
-    	int flagHeight = (5 * height) / 12;
-    	int flagWidth = (3 * flagHeight / 2);
-    	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 140, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
-        dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", aspectRatioXOffset.getIntValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 160, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 140, Alignment.LEFT, false, smallFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsCarMake = drawnStringFactory.newDrawnString( "dsCarMake", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 120, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 100, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 80, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsLaptime = drawnStringFactory.newDrawnString( "dsLaptime", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 60, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	int lineHeight = TextureImage2D.getStringHeight("0%C", captionFont);
+    	int posHeight = (5 * height) / 12;
+    	int posWidth = posHeight + TextureImage2D.getStringWidth("8", largeFont);
+    	
+    	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", aspectRatioXOffset.getValue() + padding + posWidth / 2, height - aspectRatioYOffset.getValue() - padding - margin - (posHeight / 3), Alignment.CENTER, true, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
+        dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", aspectRatioXOffset.getIntValue() + 2 * padding + posWidth + margin, height - aspectRatioYOffset.getValue() - margin - 2 * padding - 3 * lineHeight, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", aspectRatioXOffset.getValue() + 2 * padding + posWidth + margin, height - aspectRatioYOffset.getValue() - margin - padding - 2 * lineHeight, Alignment.LEFT, false, smallFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsCarMake = drawnStringFactory.newDrawnString( "dsCarMake", aspectRatioXOffset.getValue() + 2 * padding + posWidth + margin, height - aspectRatioYOffset.getValue() - margin - lineHeight, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", aspectRatioXOffset.getValue() + 2 * padding + posWidth + margin, height - aspectRatioYOffset.getValue() - margin - TextureImage2D.getStringHeight("0%C", smallFont), Alignment.LEFT, false, smallFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsCaption = drawnStringFactory.newDrawnString( "dsCaption", width - aspectRatioXOffset.getValue() - padding, height - aspectRatioYOffset.getValue() - margin - padding - 2 * lineHeight, Alignment.RIGHT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsLaptime = drawnStringFactory.newDrawnString( "dsLaptime", width - aspectRatioXOffset.getValue() - padding, height - aspectRatioYOffset.getValue() - margin - lineHeight, Alignment.RIGHT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	caption = "FASTEST LAP";
     }
     
@@ -200,11 +202,16 @@ public class fastestlap2 extends Widget
     
     	int padding = 4;
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
+    	int lineHeight = TextureImage2D.getStringHeight("0%C", captionFont);
     	
-    	int posHeight = (5 * height) / 12;
-    	int posWidth = posHeight;
+    	int posHeight = 3 * lineHeight + 2 * padding;
+    	int posWidth = posHeight + TextureImage2D.getStringWidth("8", largeFont);
     	int posOffsetX = offsetX + aspectRatioXOffset.getValue() + padding;
-    	int posOffsetY = (offsetY + height) - aspectRatioYOffset.getValue();
+    	int posOffsetY = (offsetY + height) - aspectRatioYOffset.getValue() - margin - 2 * padding - 3 * lineHeight;
+    	
+    	Rect2i square = new Rect2i(posOffsetX, posOffsetY, posWidth, posHeight);
+    	textureCanvas.setColor(new Color(87, 89, 89, 255));
+    	textureCanvas.fillRect(square);
     }
     
     @Override
@@ -213,6 +220,7 @@ public class fastestlap2 extends Widget
     	ScoringInfo scoringInfo = gameData.getScoringInfo();
     	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
     	
+    	carModel = "TEST";
         if ( needsCompleteRedraw || laptime.hasChanged() )
         {
         	driverName = fastestCar.getDriverNameShort();
@@ -225,11 +233,16 @@ public class fastestlap2 extends Widget
         	{
         		carMake = "CAR";
         	}
+        	if(isEditorMode)
+        	{
+        		carMake = "MASERATI";
+        		carModel = "QUATTROPORTE";
+        	}
         	dsDriverPos.draw( offsetX, offsetY, driverPos.getValueAsString(), texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );
             dsTeamName.draw(offsetX, offsetY, "TEAM", texture);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
-            dsCarModel.draw(offsetX, offsetY, "TEST", texture);
+            dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth(" ", captionFont), offsetY, carModel, texture, true);
         	dsCaption.draw( offsetX, offsetY, caption, texture );
             dsLaptime.draw( offsetX, offsetY, TimingUtil.getTimeAsLaptimeString(laptime.getValue()), texture );
         }

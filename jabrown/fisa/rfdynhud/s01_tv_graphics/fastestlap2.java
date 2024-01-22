@@ -11,8 +11,10 @@ import org.openmali.types.twodee.Rect2i;
 
 import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_graphics;
 import net.ctdp.rfdynhud.gamedata.GamePhase;
+import net.ctdp.rfdynhud.gamedata.Laptime;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
+import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
 import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FontProperty;
@@ -26,6 +28,7 @@ import net.ctdp.rfdynhud.render.Texture2DCanvas;
 import net.ctdp.rfdynhud.render.TextureImage2D;
 import net.ctdp.rfdynhud.util.PropertyWriter;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
+import net.ctdp.rfdynhud.util.TimingUtil;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
 import net.ctdp.rfdynhud.values.FloatValue;
 import net.ctdp.rfdynhud.values.IntValue;
@@ -53,24 +56,16 @@ public class fastestlap2 extends Widget
     private IntProperty aspectRatioXOffset = new IntProperty("X Offset", 0);
 	
 	//the data it needs
-    private IntValue driverPos = null;
+    private final IntValue driverPos = new IntValue(0);
     private String driverName = null;
     private String teamName = null;
     private String carMake = null;
     private String carModel = null;
     private String caption = null;
-    private FloatValue laptime = null;
+    public Laptime lap = null;
+    private final FloatValue laptime = new FloatValue( -1f, 0.1f );
 	
-    Boolean visible = false;
-    private DrawnString dsInformation = null;
-    private String captionText = "";
-    private String informationText = "";
-    private String scOut = "";
-    private String scIn = "";
-    private String redFlag = "";
-    private String greenFlag = "";
-    private int informationToShow = 5;
-    private FloatValue currentSector = null;
+    private Boolean visible = false;
 
     public fastestlap2()
     {
@@ -153,7 +148,6 @@ public class fastestlap2 extends Widget
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	int flagHeight = (5 * height) / 12;
     	int flagWidth = (3 * flagHeight / 2);
-    	dsInformation = drawnStringFactory.newDrawnString( "dsInformation", aspectRatioXOffset.getValue() + padding + flagWidth + padding + aspectRatioXOffset.getValue(), height - 2 * margin - (flagHeight / 2) - aspectRatioYOffset.getValue(), Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 140, Alignment.LEFT, false, largeFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", aspectRatioXOffset.getIntValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 160, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 140, Alignment.LEFT, false, smallFont.getFont(), isFontAntiAliased(), getFontColor() );
@@ -161,20 +155,29 @@ public class fastestlap2 extends Widget
     	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 100, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCaption = drawnStringFactory.newDrawnString( "dsCaption", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 80, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsLaptime = drawnStringFactory.newDrawnString( "dsLaptime", aspectRatioXOffset.getValue() + aspectRatioXOffset.getValue(), height - aspectRatioYOffset.getValue() - 60, Alignment.LEFT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	captionText = "FASTEST LAP";
-    	greenFlag = "GREEN FLAG";
-    	informationText = greenFlag;
+    	caption = "FASTEST LAP";
     }
     
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
         ScoringInfo scoringInfo = gameData.getScoringInfo();
+        lap = scoringInfo.getFastestLaptime();
+        if(lap == null || !lap.isFinished())
+        {
+        	laptime.update(-1f);
+        }
+        else
+        {
+            laptime.update(lap.getLapTime());	
+        }
         
-        informationToShow = 3;
-        
-    	forceCompleteRedraw(true);
-       	visible = true;
+        //it only becomes visible once at least 1 lap has been completed by the leader
+        if(laptime.hasChanged() && laptime.isValid() && scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() > 0)
+        {
+        	forceCompleteRedraw(true);
+        	visible = true;
+        }
 
     	if (visible == true || isEditorMode)
     	{
@@ -198,25 +201,37 @@ public class fastestlap2 extends Widget
     	int padding = 4;
     	int margin = TextureImage2D.getStringHeight("0%C", largeFont) / 2;
     	
-    	int flagHeight = (5 * height) / 12;
-    	int flagWidth = (3 * flagHeight / 2);
-    	int flagOffsetX = offsetX + aspectRatioXOffset.getValue() + padding;
-    	int flagOffsetY = (offsetY + height) - aspectRatioYOffset.getValue() - flagHeight - margin;
-    	Rect2i flag = new Rect2i(flagOffsetX, flagOffsetY, flagWidth, flagHeight);
+    	int posHeight = (5 * height) / 12;
+    	int posWidth = posHeight;
+    	int posOffsetX = offsetX + aspectRatioXOffset.getValue() + padding;
+    	int posOffsetY = (offsetY + height) - aspectRatioYOffset.getValue();
     }
     
     @Override
     protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
     {
-        if ( needsCompleteRedraw || isVisible() )
+    	ScoringInfo scoringInfo = gameData.getScoringInfo();
+    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
+    	
+        if ( needsCompleteRedraw || laptime.hasChanged() )
         {
-        	dsDriverPos.draw( offsetX, offsetY, "2", texture );
-            dsDriverName.draw( offsetX, offsetY, "DRIVER", texture );
+        	driverName = fastestCar.getDriverNameShort();
+        	driverPos.update(fastestCar.getPlace(false));
+        	if(fastestCar.getVehicleInfo() != null)
+        	{
+        		carMake = fastestCar.getVehicleName();	
+        	}
+        	else
+        	{
+        		carMake = "CAR";
+        	}
+        	dsDriverPos.draw( offsetX, offsetY, driverPos.getValueAsString(), texture );
+            dsDriverName.draw( offsetX, offsetY, driverName, texture );
             dsTeamName.draw(offsetX, offsetY, "TEAM", texture);
-            dsCarMake.draw(offsetX, offsetY, "CAR", texture);
+            dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(offsetX, offsetY, "TEST", texture);
-        	dsCaption.draw( offsetX, offsetY, captionText, texture );
-            dsLaptime.draw( offsetX, offsetY, "NO TIME", texture );
+        	dsCaption.draw( offsetX, offsetY, caption, texture );
+            dsLaptime.draw( offsetX, offsetY, TimingUtil.getTimeAsLaptimeString(laptime.getValue()), texture );
         }
     }
 }

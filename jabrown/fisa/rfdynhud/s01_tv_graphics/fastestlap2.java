@@ -61,9 +61,13 @@ public class fastestlap2 extends Widget
     private IntProperty padding = new IntProperty("Padding", 4);
     private IntProperty margin = new IntProperty("Margin", 20);
     private IntProperty vMargin = new IntProperty("Vertical Margin", 20);
+    private IntProperty modelAdjustment = new IntProperty("Model Y Offset Adjustment", 0);
+    private IntProperty testNumber = new IntProperty("Test Position Number", 4);
+    private IntProperty posAdjustment = new IntProperty("Position Number X Offset Adjustment", 0);
 	
 	//the data it needs
     private final IntValue driverPos = new IntValue(0);
+    private String posString = "4";
     private String driverName = null;
     private String teamName = null;
     private String carMake = null;
@@ -114,6 +118,9 @@ public class fastestlap2 extends Widget
         writer.writeProperty(padding, "Padding around position number.");
         writer.writeProperty(margin, "Horizontal margin between edge of screen and text");
         writer.writeProperty(vMargin, "Vertical margin between text and position square");
+        writer.writeProperty(modelAdjustment, "Car model Y offset adjustment (from below).");
+        writer.writeProperty(testNumber, "Position (for testing layout).");
+        writer.writeProperty(posAdjustment, "Position number X offset adjustment (from right).");
     }
     
     /**
@@ -135,6 +142,9 @@ public class fastestlap2 extends Widget
         else if (loader.loadProperty(padding));
         else if (loader.loadProperty(margin));
         else if (loader.loadProperty(vMargin));
+        else if (loader.loadProperty(modelAdjustment));
+        else if (loader.loadProperty(testNumber));
+        else if (loader.loadProperty(posAdjustment));
     }
     
     /**
@@ -158,6 +168,9 @@ public class fastestlap2 extends Widget
         propsCont.addProperty(padding);
         propsCont.addProperty(margin);
         propsCont.addProperty(vMargin);
+        propsCont.addProperty(modelAdjustment);
+        propsCont.addProperty(testNumber);
+        propsCont.addProperty(posAdjustment);
     }
     
     /**
@@ -178,7 +191,6 @@ public class fastestlap2 extends Widget
     	int posHeight = normalFontHeight * 3;
     	int posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
     	int posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
-    	int plemp = posWidth;
     	
     	int freeSpace = height - aspectRatioYOffset.getValue() - margin.getValue();
     	int line3YOffsetBig = freeSpace - normalFontHeight;
@@ -191,11 +203,11 @@ public class fastestlap2 extends Widget
     	int leftXOffset = posXOffset + posWidth + vMargin.getValue();
     	int rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
-    	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset, posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset - posAdjustment.getValue(), posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", leftXOffset, line1YOffset, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", leftXOffset, line2YOffset, Alignment.LEFT, false, teamFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCarMake = drawnStringFactory.newDrawnString( "dsCarMake", leftXOffset, line3YOffsetBig, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", leftXOffset, line3YOffsetSmall, Alignment.LEFT, false, modelFont.getFont(), isFontAntiAliased(), getFontColor() );
+    	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", leftXOffset, line3YOffsetSmall - modelAdjustment.getValue(), Alignment.LEFT, false, modelFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCaption = drawnStringFactory.newDrawnString( "dsCaption", rightXOffset, captionYOffset, Alignment.RIGHT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsLaptime = drawnStringFactory.newDrawnString( "dsLaptime", rightXOffset, line3YOffsetBig, Alignment.RIGHT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	caption = "FASTEST LAP";
@@ -280,6 +292,7 @@ public class fastestlap2 extends Widget
             	teamName = driverData.split(";")[1];
             	carMake = driverData.split(";")[3];
             	carModel = driverData.split(";")[4];
+            	posString = driverPos.getValueAsString();
         	}
         	else
         	{
@@ -291,12 +304,13 @@ public class fastestlap2 extends Widget
         		teamName = "EXTREMELY LONG SPONSOR NAME VERY LONG TEAM NAME MOTORSPORTS";
         		carMake = "MASERATI";
         		carModel = "QUATTROPORTE";
+        		posString = testNumber.getValue().toString();
         	}
-        	dsDriverPos.draw( offsetX, offsetY, driverPos.getValueAsString(), texture );
+        	dsDriverPos.draw( offsetX, offsetY, posString, texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );
             dsTeamName.draw(offsetX, offsetY, teamName, texture);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
-            dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth(" ", captionFont), offsetY, carModel, texture, true);
+            dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);
         	dsCaption.draw( offsetX, offsetY, caption, texture );
             dsLaptime.draw( offsetX, offsetY, TimingUtil.getTimeAsLaptimeString(laptime.getValue()), texture );
         }

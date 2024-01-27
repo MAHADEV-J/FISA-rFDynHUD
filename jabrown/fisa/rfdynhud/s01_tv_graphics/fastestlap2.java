@@ -301,7 +301,7 @@ public class fastestlap2 extends Widget
     	driverName = fastestCar.getDriverNameShort().toUpperCase();
     	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
     	driverPos.update(fastestCar.getPlace(false));
-    	if(fastestCar.getVehicleInfo() != null || fastestCar.isPlayer())
+    	if( laptime.isValid() && (fastestCar.getVehicleInfo() != null || fastestCar.isPlayer()) )
     	{
     		driverNat = driverData.split(";")[0];
         	teamName = driverData.split(";")[1];

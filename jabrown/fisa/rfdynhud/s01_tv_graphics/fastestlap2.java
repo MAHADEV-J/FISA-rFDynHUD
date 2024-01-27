@@ -19,6 +19,7 @@ import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FloatProperty;
 import net.ctdp.rfdynhud.properties.FontProperty;
+import net.ctdp.rfdynhud.properties.ImageProperty;
 import net.ctdp.rfdynhud.properties.ImagePropertyWithTexture;
 import net.ctdp.rfdynhud.properties.IntProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
@@ -65,9 +66,11 @@ public class fastestlap2 extends Widget
     private IntProperty modelAdjustment = new IntProperty("Model Y Offset Adjustment", 0);
     private IntProperty testNumber = new IntProperty("Test Position Number", 4);
     private IntProperty posAdjustment = new IntProperty("Position Number X Offset Adjustment", 0);
+    private final ImageProperty flagArg = new ImageProperty("flagArg", "fisa/flags/arg.png");
     private TextureImage2D driverFlag = null;
     private TextureImage2D teamFlag = null;
-    private ImagePropertyWithTexture flagArg = new ImagePropertyWithTexture("flagArg", "fisa/flags/arg.png");
+    //private TextureImage2D classIcon = null;
+    //private TextureImage2D carNumber = null;
 	private int normalFontHeight = 0;
 	private int modelFontHeight = 0;
 	private int teamFontHeight = 0;
@@ -225,8 +228,10 @@ public class fastestlap2 extends Widget
     	leftXOffset = posXOffset + posWidth + vMargin.getValue();
     	rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
-    	flagArg.updateSize(Math.round((3/2) * normalFontHeight), normalFontHeight, isEditorMode);
-    	driverFlag = flagArg.getImage().getScaledTextureImage(Math.round((3/2) * normalFontHeight), normalFontHeight, driverFlag, isEditorMode);
+    	//TODO: figure out why this isn't working
+    	//driverFlag = flagArg.getImage().getScaledTextureImage((Math.round(21/19 * normalFontHeight)), (Math.round(14/19 * normalFontHeight)), driverFlag, isEditorMode);
+    	driverFlag = flagArg.getImage().getScaledTextureImage(21, 14, driverFlag, isEditorMode);
+    	teamFlag = flagArg.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
     	
     	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset - posAdjustment.getValue(), posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", leftXOffset, line1YOffset, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
@@ -267,10 +272,43 @@ public class fastestlap2 extends Widget
     	return false;
     }
     
+    protected void getDriverInfo(LiveGameData gameData, boolean isEditorMode)
+    {
+    	ScoringInfo scoringInfo = gameData.getScoringInfo();
+    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
+    	
+    	carModel = "TEST";
+    	
+    	driverName = fastestCar.getDriverNameShort().toUpperCase();
+    	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
+    	driverPos.update(fastestCar.getPlace(false));
+    	if(fastestCar.getVehicleInfo() != null)
+    	{
+        	teamName = driverData.split(";")[1];
+        	carMake = driverData.split(";")[3];
+        	carModel = driverData.split(";")[4];
+        	posString = driverPos.getValueAsString();
+    	}
+    	else
+    	{
+    		teamName = "TEAM";
+    		carMake = "CAR";
+    	}
+    	if(isEditorMode)
+    	{
+    		teamName = "EXTREMELY LONG SPONSOR NAME VERY LONG TEAM NAME MOTORSPORTS";
+    		carMake = "MASERATI";
+    		carModel = "QUATTROPORTE";
+    		posString = testNumber.getValue().toString();
+    	}
+    }
+    
     @Override
     protected void drawBackground( LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height, boolean isRoot )
     {
     	super.drawBackground(gameData, isEditorMode, texture, offsetX, offsetY, width, height, isRoot);    	
+    	
+    	getDriverInfo(gameData, isEditorMode);
     	
     	texture.clear(offsetX, offsetY, width, height, true, null);
     	Texture2DCanvas textureCanvas = texture.getTextureCanvas();
@@ -294,44 +332,20 @@ public class fastestlap2 extends Widget
     	}
 
     	textureCanvas.fillRect(square);
-    	
-    	texture.clear(flagArg.getTexture(), leftXOffset + TextureImage2D.getStringWidth(driverName + "  ", normalFont), line1YOffset, false, null);
     }
     
     @Override
     protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
     {
-    	ScoringInfo scoringInfo = gameData.getScoringInfo();
-    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
-    	
-    	carModel = "TEST";
         if ( needsCompleteRedraw || laptime.hasChanged() )
         {
-        	driverName = fastestCar.getDriverNameShort().toUpperCase();
-        	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
-        	driverPos.update(fastestCar.getPlace(false));
-        	if(fastestCar.getVehicleInfo() != null)
-        	{
-            	teamName = driverData.split(";")[1];
-            	carMake = driverData.split(";")[3];
-            	carModel = driverData.split(";")[4];
-            	posString = driverPos.getValueAsString();
-        	}
-        	else
-        	{
-        		teamName = "TEAM";
-        		carMake = "CAR";
-        	}
-        	if(isEditorMode)
-        	{
-        		teamName = "EXTREMELY LONG SPONSOR NAME VERY LONG TEAM NAME MOTORSPORTS";
-        		carMake = "MASERATI";
-        		carModel = "QUATTROPORTE";
-        		posString = testNumber.getValue().toString();
-        	}
         	dsDriverPos.draw( offsetX, offsetY, posString, texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );
+            //TODO: don't understand why it's 6 pixels too high
+            texture.drawImage(driverFlag, offsetX + leftXOffset + TextureImage2D.getStringWidth(driverName + "  ", normalFont), offsetY + line1YOffset + 6, false, null);
             dsTeamName.draw(offsetX, offsetY, teamName, texture);
+            //TODO: don't understand why it's 4 pixels too high
+            texture.drawImage(teamFlag, offsetX + leftXOffset + TextureImage2D.getStringWidth(teamName + "  ", teamFont), offsetY + line2YOffset + 4, false, null);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);
         	dsCaption.draw( offsetX, offsetY, caption, texture );

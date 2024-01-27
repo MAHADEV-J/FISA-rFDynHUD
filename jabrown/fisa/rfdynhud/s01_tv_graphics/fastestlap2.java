@@ -68,6 +68,24 @@ public class fastestlap2 extends Widget
     private TextureImage2D driverFlag = null;
     private TextureImage2D teamFlag = null;
     private ImagePropertyWithTexture flagArg = new ImagePropertyWithTexture("flagArg", "fisa/flags/arg.png");
+	private int normalFontHeight = 0;
+	private int modelFontHeight = 0;
+	private int teamFontHeight = 0;
+	private int captionFontHeight = 0;
+	private int posHeight = 0;
+	private int posWidth = 0;
+	private int posXOffset = 0;
+	private int posYOffset = 0;
+	private int freeSpace = 0;
+	private int line3YOffsetBig = 0;
+	private int line3YOffsetSmall = 0;
+	private int line2YOffset = 0;
+	private int captionYOffset = 0;
+	private int line1YOffset = 0;
+	private int posNumYOffset = 0;
+	private int posNumXOffset = 0;
+	private int leftXOffset = 0;
+	private int rightXOffset = 0;
 	
 	//the data it needs
     private final IntValue driverPos = new IntValue(0);
@@ -188,24 +206,24 @@ public class fastestlap2 extends Widget
     @Override
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
-    	int normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
-    	int modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
-    	int teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
-    	int captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
-    	int posHeight = normalFontHeight * 3;
-    	int posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
-    	int posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
+    	normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
+    	modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
+    	teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
+    	captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
+    	posHeight = normalFontHeight * 3;
+    	posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
+    	posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
     	
-    	int freeSpace = height - aspectRatioYOffset.getValue() - margin.getValue();
-    	int line3YOffsetBig = freeSpace - normalFontHeight;
-    	int line3YOffsetSmall = freeSpace - modelFontHeight;
-    	int line2YOffset = line3YOffsetBig - teamFontHeight;
-    	int captionYOffset = line3YOffsetBig - captionFontHeight;
-    	int line1YOffset = line2YOffset - normalFontHeight;
-    	int posNumYOffset = line1YOffset + padding.getValue();
-    	int posNumXOffset = posXOffset + (posWidth - TextureImage2D.getStringWidth("222", posFont) / 2);
-    	int leftXOffset = posXOffset + posWidth + vMargin.getValue();
-    	int rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
+    	freeSpace = height - aspectRatioYOffset.getValue() - margin.getValue();
+    	line3YOffsetBig = freeSpace - normalFontHeight;
+    	line3YOffsetSmall = freeSpace - modelFontHeight;
+    	line2YOffset = line3YOffsetBig - teamFontHeight;
+    	captionYOffset = line3YOffsetBig - captionFontHeight;
+    	line1YOffset = line2YOffset - normalFontHeight;
+    	posNumYOffset = line1YOffset + padding.getValue();
+    	posNumXOffset = posXOffset + (posWidth - TextureImage2D.getStringWidth("222", posFont) / 2);
+    	leftXOffset = posXOffset + posWidth + vMargin.getValue();
+    	rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
     	flagArg.updateSize(Math.round((3/2) * normalFontHeight), normalFontHeight, isEditorMode);
     	driverFlag = flagArg.getImage().getScaledTextureImage(Math.round((3/2) * normalFontHeight), normalFontHeight, driverFlag, isEditorMode);
@@ -259,16 +277,8 @@ public class fastestlap2 extends Widget
     	textureCanvas.setColor(new Color(0, 0, 0, 80));
     	rectangle = new Rect2i(offsetX, offsetY, width, height); //the whole thing
     	textureCanvas.fillRect(rectangle); //make the whole thing transparent black (background)
-    	
-    	//TODO these should be class properties so I don't have to define them all the time
-    	int normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
-    	int modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
-    	int teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
-    	int captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
-    	int posHeight = normalFontHeight * 3;
-    	int posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
-    	int posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;	
-    	int posYOffset = (offsetY + height) - aspectRatioYOffset.getValue() - margin.getValue() - posHeight;
+    		
+    	posYOffset = (offsetY + height) - aspectRatioYOffset.getValue() - margin.getValue() - posHeight;
     	
     	square = new Rect2i(posXOffset, posYOffset, posWidth, posHeight); //the "square" (not really a square) that the position number is drawn on
     	
@@ -284,17 +294,6 @@ public class fastestlap2 extends Widget
     	}
 
     	textureCanvas.fillRect(square);
-    	
-    	int freeSpace = height - aspectRatioYOffset.getValue() - margin.getValue();
-    	int line3YOffsetBig = freeSpace - normalFontHeight;
-    	int line3YOffsetSmall = freeSpace - modelFontHeight;
-    	int line2YOffset = line3YOffsetBig - teamFontHeight;
-    	int captionYOffset = line3YOffsetBig - captionFontHeight;
-    	int line1YOffset = line2YOffset - normalFontHeight;
-    	int posNumYOffset = line1YOffset + padding.getValue();
-    	int posNumXOffset = posXOffset + (posWidth - TextureImage2D.getStringWidth("222", posFont) / 2);
-    	int leftXOffset = posXOffset + posWidth + vMargin.getValue();
-    	int rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
     	texture.clear(flagArg.getTexture(), leftXOffset + TextureImage2D.getStringWidth(driverName + "  ", normalFont), line1YOffset, false, null);
     }

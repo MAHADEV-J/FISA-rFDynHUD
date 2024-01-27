@@ -67,6 +67,8 @@ public class fastestlap2 extends Widget
     private IntProperty testNumber = new IntProperty("Test Position Number", 4);
     private IntProperty posAdjustment = new IntProperty("Position Number X Offset Adjustment", 0);
     private final ImageProperty flagArg = new ImageProperty("flagArg", "fisa/flags/arg.png");
+    private ImageProperty imgDriverFlag = new ImageProperty("imgDriverFlag", "");
+    private ImageProperty imgTeamFlag = new ImageProperty("imgTeamFlag", "");
     private TextureImage2D driverFlag = null;
     private TextureImage2D teamFlag = null;
     //private TextureImage2D classIcon = null;
@@ -94,7 +96,9 @@ public class fastestlap2 extends Widget
     private final IntValue driverPos = new IntValue(0);
     private String posString = "4";
     private String driverName = null;
+    private String driverNat = null;
     private String teamName = null;
+    private String teamNat = null;
     private String carMake = null;
     private String carModel = null;
     private String caption = null;
@@ -230,8 +234,8 @@ public class fastestlap2 extends Widget
     	
     	//TODO: figure out why this isn't working
     	//driverFlag = flagArg.getImage().getScaledTextureImage((Math.round(21/19 * normalFontHeight)), (Math.round(14/19 * normalFontHeight)), driverFlag, isEditorMode);
-    	driverFlag = flagArg.getImage().getScaledTextureImage(21, 14, driverFlag, isEditorMode);
-    	teamFlag = flagArg.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
+    	//driverFlag = flagArg.getImage().getScaledTextureImage(21, 14, driverFlag, isEditorMode);
+    	//teamFlag = flagArg.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
     	
     	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset - posAdjustment.getValue(), posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", leftXOffset, line1YOffset, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
@@ -282,9 +286,11 @@ public class fastestlap2 extends Widget
     	driverName = fastestCar.getDriverNameShort().toUpperCase();
     	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
     	driverPos.update(fastestCar.getPlace(false));
-    	if(fastestCar.getVehicleInfo() != null)
+    	if(fastestCar.getVehicleInfo() != null || fastestCar.isPlayer())
     	{
+    		driverNat = driverData.split(";")[0];
         	teamName = driverData.split(";")[1];
+        	teamNat = driverData.split(";")[2];
         	carMake = driverData.split(";")[3];
         	carModel = driverData.split(";")[4];
         	posString = driverPos.getValueAsString();
@@ -296,11 +302,33 @@ public class fastestlap2 extends Widget
     	}
     	if(isEditorMode)
     	{
+    		driverNat = "ITA";
     		teamName = "EXTREMELY LONG SPONSOR NAME VERY LONG TEAM NAME MOTORSPORTS";
+    		teamNat = "NED";
     		carMake = "MASERATI";
     		carModel = "QUATTROPORTE";
     		posString = testNumber.getValue().toString();
     	}
+    	
+    	if(driverNat == "NOT IN THIS RACE")
+    	{
+    		imgDriverFlag = new ImageProperty("imgDriverFlag", "fisa/flags/ita.png");
+    	}
+    	else
+    	{
+    		imgDriverFlag = new ImageProperty("imgDriverFlag", "fisa/flags/" + driverNat.toLowerCase() + ".png");
+    	}
+    	driverFlag = imgDriverFlag.getImage().getScaledTextureImage(21, 14, driverFlag, isEditorMode);
+    	
+    	if(teamNat == "NOT IN THIS RACE")
+    	{
+    		imgTeamFlag = new ImageProperty("imgTeamFlag", "fisa/flags/ned.png");
+    	}
+    	else
+    	{
+    		imgTeamFlag = new ImageProperty("imgTeamFlag", "fisa/flags/" + teamNat.toLowerCase() + ".png");
+    	}
+    	teamFlag = imgTeamFlag.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
     }
     
     @Override

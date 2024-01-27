@@ -70,6 +70,7 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
     {
     	File ini;
     	ini = new File(getConfigFolder, "driverdata.ini");
+		String driverData = "NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE";
     	
     	if(ini.exists())
     	{
@@ -77,7 +78,6 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
     		{
     			int delimiter;
     			String line;
-    			String driverData = "";
     			BufferedReader br = new BufferedReader(new FileReader(ini));
     			
     			while((line = br.readLine()) != null)
@@ -95,11 +95,7 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
     		catch (Throwable t)
     		{}
     	}
-    	else
-    	{
-    		return "NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE";
-    	}
-		return driverName;
+		return driverData;
     }
     
     public String getDefaultNamedColorValue( String name )

@@ -252,7 +252,7 @@ public class fastestlap2 extends Widget
     @Override
     protected void drawBackground( LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height, boolean isRoot )
     {
-    	super.drawBackground(gameData, isEditorMode, texture, offsetX, offsetY, width, height, isRoot);
+    	super.drawBackground(gameData, isEditorMode, texture, offsetX, offsetY, width, height, isRoot);    	
     	
     	texture.clear(offsetX, offsetY, width, height, true, null);
     	Texture2DCanvas textureCanvas = texture.getTextureCanvas();
@@ -260,10 +260,14 @@ public class fastestlap2 extends Widget
     	rectangle = new Rect2i(offsetX, offsetY, width, height); //the whole thing
     	textureCanvas.fillRect(rectangle); //make the whole thing transparent black (background)
     	
+    	//TODO these should be class properties so I don't have to define them all the time
     	int normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
+    	int modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
+    	int teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
+    	int captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
     	int posHeight = normalFontHeight * 3;
     	int posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
-    	int posXOffset = offsetX + aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
+    	int posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;	
     	int posYOffset = (offsetY + height) - aspectRatioYOffset.getValue() - margin.getValue() - posHeight;
     	
     	square = new Rect2i(posXOffset, posYOffset, posWidth, posHeight); //the "square" (not really a square) that the position number is drawn on
@@ -280,22 +284,6 @@ public class fastestlap2 extends Widget
     	}
 
     	textureCanvas.fillRect(square);
-    }
-    
-    @Override
-    protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
-    {
-    	ScoringInfo scoringInfo = gameData.getScoringInfo();
-    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
-    	
-    	//TODO these should be class properties so I don't have to define them all the time
-    	int normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
-    	int modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
-    	int teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
-    	int captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
-    	int posHeight = normalFontHeight * 3;
-    	int posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
-    	int posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
     	
     	int freeSpace = height - aspectRatioYOffset.getValue() - margin.getValue();
     	int line3YOffsetBig = freeSpace - normalFontHeight;
@@ -307,6 +295,15 @@ public class fastestlap2 extends Widget
     	int posNumXOffset = posXOffset + (posWidth - TextureImage2D.getStringWidth("222", posFont) / 2);
     	int leftXOffset = posXOffset + posWidth + vMargin.getValue();
     	int rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
+    	
+    	texture.clear(flagArg.getTexture(), leftXOffset + TextureImage2D.getStringWidth(driverName + "  ", normalFont), line1YOffset, false, null);
+    }
+    
+    @Override
+    protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
+    {
+    	ScoringInfo scoringInfo = gameData.getScoringInfo();
+    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
     	
     	carModel = "TEST";
         if ( needsCompleteRedraw || laptime.hasChanged() )
@@ -335,7 +332,6 @@ public class fastestlap2 extends Widget
         	}
         	dsDriverPos.draw( offsetX, offsetY, posString, texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );
-        	texture.clear(flagArg.getTexture(), leftXOffset + TextureImage2D.getStringWidth(driverName + "  ", normalFont), line1YOffset, false, null);
             dsTeamName.draw(offsetX, offsetY, teamName, texture);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);

@@ -15,6 +15,7 @@ import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
+import net.ctdp.rfdynhud.properties.DelayProperty;
 import net.ctdp.rfdynhud.properties.FontProperty;
 import net.ctdp.rfdynhud.properties.IntProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
@@ -28,6 +29,7 @@ import net.ctdp.rfdynhud.util.PropertyWriter;
 import net.ctdp.rfdynhud.util.SubTextureCollector;
 import net.ctdp.rfdynhud.valuemanagers.Clock;
 import net.ctdp.rfdynhud.values.FloatValue;
+import net.ctdp.rfdynhud.values.IntValue;
 import net.ctdp.rfdynhud.widgets.base.widget.Widget;
 
 /**
@@ -47,8 +49,6 @@ public class racecontrol extends Widget
     private final FontProperty largeFont = new FontProperty("LargeFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_LARGE_FONT.getKey());
     private final FontProperty captionFont = new FontProperty("CaptionFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_CAPTION_FONT.getKey());
     private final FontProperty smallFont = new FontProperty("SmallFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_SMALL_FONT.getKey());
-    private final float visibleTime = 10.0f;
-    private float disappearTime = -1f;
     private static final InputAction ToggleSafetyCarOut = new InputAction ("ToggleSafetyCarOut", false); //defines an input action
     private static final InputAction ToggleSafetyCarIn = new InputAction ("ToggleSafetyCarIn", false); //defines an input action
     private static final InputAction ToggleRedFlag = new InputAction ("ToggleRedFlag", false); //defines an input action
@@ -58,10 +58,16 @@ public class racecontrol extends Widget
     private FloatValue currentSector = null;
     private IntProperty aspectRatioYOffset = new IntProperty("Y Offset (From Below)", 0);
     private IntProperty aspectRatioXOffset = new IntProperty("X Offset", 0);
+    private IntValue currentLap = new IntValue(0);
+	private final DelayProperty visibleTime;
+	private long visibleEnd;
+	private Boolean yellow = false;
     
     public racecontrol()
     {
         super( JABrownFISAWidgetSets01_tv_graphics.INSTANCE, JABrownFISAWidgetSets01_tv_graphics.WIDGET_PACKAGE_S01_TV_GRAPHICS, 20.0f, 32.5f );
+        visibleTime = new DelayProperty("visibleTime", net.ctdp.rfdynhud.properties.DelayProperty.DisplayUnits.SECONDS, 10);
+        visibleEnd = 0;
     }
     
     /**
@@ -232,48 +238,42 @@ public class racecontrol extends Widget
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
-//    	Boolean bongo = false;
-//    	
         ScoringInfo scoringInfo = gameData.getScoringInfo();
-//    	
+        if((int)scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() != currentLap.getValue())
+        {
+        	currentLap.update((int)scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap());	
+        }
+    	
         if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
         {
         	if (informationToShow != 0)
         	{
         		ToggleSafetyCarOut();
         	}
-//        	bongo = true;	
-        	visible = true;
+        	if(yellow == false)
+        	{
+        		yellow = true;
+        		visibleEnd = scoringInfo.getSessionNanos() + visibleTime.getDelayNanos();
+        	}
+        	//visible = true;
+        	//return true;
         }
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP)
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP && scoringInfo.getYellowFlagState() != YellowFlagState.PENDING)
         {
         	if (informationToShow != 0)
         	{
         		ToggleSafetyCarOut();
         	}
-        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
-        	//{
-            	visible = true;
-        	//}
-        	//else
-        	//{
-        		//visible = false;
-        	//}
         }
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
+        if (currentLap.hasChanged() && scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
         	if (informationToShow != 1)
         	{
         		ToggleSafetyCarIn();
         	}
-        	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
-        	//{
-            	visible = true;	
-        	//}
-        	//else
-        	//{
-        		//visible = false;
-        	//}
+    		visibleEnd = scoringInfo.getSessionNanos() + visibleTime.getDelayNanos();
+            //visible = true;
+            //return true;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
         {
@@ -284,7 +284,7 @@ public class racecontrol extends Widget
             	forceCompleteRedraw(true);	
         	}
         	visible = true;
-        	//visible = false;
+        	//return true;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
         {
@@ -295,6 +295,7 @@ public class racecontrol extends Widget
             	forceCompleteRedraw(true);	
         	}
         	visible = false;
+        	return false;
         }
         if (scoringInfo.getOnPathWetness() >= 0.2f) //when it's raining on ovals
         {
@@ -302,11 +303,30 @@ public class racecontrol extends Widget
         	{
             	ToggleRedFlag();	
         	}
-//        	bongo = true;
         	visible = true;
+        	return true;
         }
-
-    	if (visible == true || isEditorMode)
+     
+    	if(yellow == true && scoringInfo.getYellowFlagState() != YellowFlagState.PENDING)
+    	{
+    		yellow = false;
+    	}
+        
+        if(isEditorMode)
+        {
+        	return true;
+        }
+        
+    	if(scoringInfo.getSessionNanos() < visibleEnd )
+    	{
+    		forceCompleteRedraw(true);
+    	    visible = true;
+    	    return true;
+    	}
+    	
+    	visible = false;
+    	
+    	if(visible == true)
     	{
     		return true;
     	}

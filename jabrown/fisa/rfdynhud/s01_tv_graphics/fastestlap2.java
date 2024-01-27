@@ -19,6 +19,7 @@ import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.FloatProperty;
 import net.ctdp.rfdynhud.properties.FontProperty;
+import net.ctdp.rfdynhud.properties.ImagePropertyWithTexture;
 import net.ctdp.rfdynhud.properties.IntProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
 import net.ctdp.rfdynhud.properties.PropertyLoader;
@@ -64,6 +65,9 @@ public class fastestlap2 extends Widget
     private IntProperty modelAdjustment = new IntProperty("Model Y Offset Adjustment", 0);
     private IntProperty testNumber = new IntProperty("Test Position Number", 4);
     private IntProperty posAdjustment = new IntProperty("Position Number X Offset Adjustment", 0);
+    private TextureImage2D driverFlag = null;
+    private TextureImage2D teamFlag = null;
+    private ImagePropertyWithTexture flagArg = new ImagePropertyWithTexture("flagArg", "fisa/flags/arg.png");
 	
 	//the data it needs
     private final IntValue driverPos = new IntValue(0);
@@ -203,6 +207,9 @@ public class fastestlap2 extends Widget
     	int leftXOffset = posXOffset + posWidth + vMargin.getValue();
     	int rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
+    	flagArg.updateSize(Math.round((3/2) * normalFontHeight), normalFontHeight, isEditorMode);
+    	driverFlag = flagArg.getImage().getScaledTextureImage(Math.round((3/2) * normalFontHeight), normalFontHeight, driverFlag, isEditorMode);
+    	
     	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset - posAdjustment.getValue(), posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", leftXOffset, line1YOffset, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", leftXOffset, line2YOffset, Alignment.LEFT, false, teamFont.getFont(), isFontAntiAliased(), getFontColor() );
@@ -281,6 +288,26 @@ public class fastestlap2 extends Widget
     	ScoringInfo scoringInfo = gameData.getScoringInfo();
     	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
     	
+    	//TODO these should be class properties so I don't have to define them all the time
+    	int normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
+    	int modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
+    	int teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
+    	int captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
+    	int posHeight = normalFontHeight * 3;
+    	int posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
+    	int posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
+    	
+    	int freeSpace = height - aspectRatioYOffset.getValue() - margin.getValue();
+    	int line3YOffsetBig = freeSpace - normalFontHeight;
+    	int line3YOffsetSmall = freeSpace - modelFontHeight;
+    	int line2YOffset = line3YOffsetBig - teamFontHeight;
+    	int captionYOffset = line3YOffsetBig - captionFontHeight;
+    	int line1YOffset = line2YOffset - normalFontHeight;
+    	int posNumYOffset = line1YOffset + padding.getValue();
+    	int posNumXOffset = posXOffset + (posWidth - TextureImage2D.getStringWidth("222", posFont) / 2);
+    	int leftXOffset = posXOffset + posWidth + vMargin.getValue();
+    	int rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
+    	
     	carModel = "TEST";
         if ( needsCompleteRedraw || laptime.hasChanged() )
         {
@@ -308,6 +335,7 @@ public class fastestlap2 extends Widget
         	}
         	dsDriverPos.draw( offsetX, offsetY, posString, texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );
+        	texture.clear(flagArg.getTexture(), leftXOffset + TextureImage2D.getStringWidth(driverName + "  ", normalFont), line1YOffset, false, null);
             dsTeamName.draw(offsetX, offsetY, teamName, texture);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);

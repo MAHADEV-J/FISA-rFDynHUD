@@ -17,6 +17,7 @@ import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
 import net.ctdp.rfdynhud.gamedata.YellowFlagState;
 import net.ctdp.rfdynhud.input.InputAction;
+import net.ctdp.rfdynhud.properties.DelayProperty;
 import net.ctdp.rfdynhud.properties.FloatProperty;
 import net.ctdp.rfdynhud.properties.FontProperty;
 import net.ctdp.rfdynhud.properties.ImageProperty;
@@ -91,6 +92,8 @@ public class fastestlap2 extends Widget
 	private int posNumXOffset = 0;
 	private int leftXOffset = 0;
 	private int rightXOffset = 0;
+	private final DelayProperty visibleTime;
+	private long visibleEnd;
 	
 	//the data it needs
     private final IntValue driverPos = new IntValue(0);
@@ -110,6 +113,8 @@ public class fastestlap2 extends Widget
     public fastestlap2()
     {
         super( JABrownFISAWidgetSets01_tv_graphics.INSTANCE, JABrownFISAWidgetSets01_tv_graphics.WIDGET_PACKAGE_S01_TV_GRAPHICS, 20.0f, 32.5f );
+        visibleTime = new DelayProperty("visibleTime", net.ctdp.rfdynhud.properties.DelayProperty.DisplayUnits.SECONDS, 5);
+        visibleEnd = 0;
     }
     
     /**
@@ -261,18 +266,28 @@ public class fastestlap2 extends Widget
             laptime.update(lap.getLapTime());	
         }
         
+        if(isEditorMode)
+        {
+        	return true;
+        }
+        
         //it only becomes visible once at least 1 lap has been completed by the leader
         if(laptime.hasChanged() && laptime.isValid() && scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() > 0)
         {
         	forceCompleteRedraw(true);
+            visibleEnd = scoringInfo.getSessionNanos() + visibleTime.getDelayNanos();
         	visible = true;
+        	return true;
         }
-
-    	if (visible == true || isEditorMode)
-    	{
-    		return true;
-    	}
     	
+        if(scoringInfo.getSessionNanos() < visibleEnd )
+        {
+            forceCompleteRedraw(true);
+            visible = true;
+            return true;
+        }
+    	
+    	visible = false;
     	return false;
     }
     

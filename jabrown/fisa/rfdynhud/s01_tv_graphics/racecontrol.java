@@ -325,7 +325,6 @@ public class racecontrol extends Widget
     	    return true;
     	}
     	
-    	//somehow, setting visible to false here makes it crash??
     	visible = false;
     	
     	if(visible == true)

@@ -284,7 +284,7 @@ public class racecontrol extends Widget
             	forceCompleteRedraw(true);	
         	}
         	visible = true;
-        	//return true;
+        	return true;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
         {
@@ -320,10 +320,12 @@ public class racecontrol extends Widget
     	if(scoringInfo.getSessionNanos() < visibleEnd )
     	{
     		forceCompleteRedraw(true);
-    	    visible = true;
+    	    //TODO: try what happens if visible is not set to true here
+    		visible = true;
     	    return true;
     	}
     	
+    	//somehow, setting visible to false here makes it crash??
     	visible = false;
     	
     	if(visible == true)

@@ -283,8 +283,8 @@ public class racecontrol extends Widget
             	toggleInformationText(greenFlag);
             	forceCompleteRedraw(true);	
         	}
-        	visible = true;
-        	return true;
+        	visible = false;
+        	return false;
         }
         if (scoringInfo.getYellowFlagState() == YellowFlagState.NONE && scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG)
         {

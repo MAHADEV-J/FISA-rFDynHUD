@@ -555,14 +555,6 @@ public class timingtower extends Widget
         	statusFontColor = Color.BLACK;
         	forceCompleteRedraw(true);
         }
-        //if caution or local yellow: black on yellow
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
-		{
-        	statusColor = Color.YELLOW;
-        	statusFontColor = Color.BLACK;
-        	forceCompleteRedraw(true); //apparently this is necessary
-		}
-        //TODO: add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
         //if finished or normal: white on grey
         if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED || (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG && scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() != scoringInfo.getMaxLaps()))
         {
@@ -570,6 +562,20 @@ public class timingtower extends Widget
         	statusFontColor = fontColor2.getColor();
         	forceCompleteRedraw(true);
         }
+        //if going green after caution: white on green
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
+        {
+        	statusColor = new Color(0, 204, 0, 255);
+        	statusFontColor = Color.WHITE;
+        	forceCompleteRedraw(true);
+        }
+        //if caution or local yellow: black on yellow
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
+		{
+        	statusColor = Color.YELLOW;
+        	statusFontColor = Color.BLACK;
+        	forceCompleteRedraw(true); //apparently this is necessary
+		}
         //if race stopped: white on red
         if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
         {

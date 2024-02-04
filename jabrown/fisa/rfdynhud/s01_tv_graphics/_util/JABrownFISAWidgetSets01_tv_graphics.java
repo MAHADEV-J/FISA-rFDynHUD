@@ -70,7 +70,7 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
     {
     	File ini;
     	ini = new File(getConfigFolder, "driverdata.ini");
-		String driverData = "NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE";
+		String driverData = "NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE";
     	
     	if(ini.exists())
     	{

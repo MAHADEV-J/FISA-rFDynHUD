@@ -70,10 +70,12 @@ public class fastestlap2 extends Widget
     private final ImageProperty flagArg = new ImageProperty("flagArg", "fisa/flags/arg.png");
     private ImageProperty imgDriverFlag = new ImageProperty("imgDriverFlag", "");
     private ImageProperty imgTeamFlag = new ImageProperty("imgTeamFlag", "");
+    private ImageProperty imgCarNumber = new ImageProperty("imgCarNumber", "");
+    private ImageProperty imgCarClass = new ImageProperty("imgCarClass", "");
     private TextureImage2D driverFlag = null;
     private TextureImage2D teamFlag = null;
-    //private TextureImage2D classIcon = null;
-    //private TextureImage2D carNumber = null;
+    private TextureImage2D numberIcon = null;
+    private TextureImage2D classIcon = null;
 	private int normalFontHeight = 0;
 	private int modelFontHeight = 0;
 	private int teamFontHeight = 0;
@@ -104,6 +106,8 @@ public class fastestlap2 extends Widget
     private String teamNat = null;
     private String carMake = null;
     private String carModel = null;
+    private String carNumber = null;
+    private String carClass = null;
     private String caption = null;
     public Laptime lap = null;
     private final FloatValue laptime = new FloatValue( -1f, 0.1f );
@@ -308,6 +312,7 @@ public class fastestlap2 extends Widget
         	teamNat = driverData.split(";")[2];
         	carMake = driverData.split(";")[3];
         	carModel = driverData.split(";")[4];
+        	carNumber = driverData.split(";")[5];
         	posString = driverPos.getValueAsString();
     	}
     	else
@@ -322,6 +327,7 @@ public class fastestlap2 extends Widget
     		teamNat = "NED";
     		carMake = "MASERATI";
     		carModel = "QUATTROPORTE";
+    		carNumber = "FOKOF";
     		posString = testNumber.getValue().toString();
     	}
     	
@@ -344,6 +350,25 @@ public class fastestlap2 extends Widget
     		imgTeamFlag = new ImageProperty("imgTeamFlag", "fisa/flags/" + teamNat.toLowerCase() + ".png");
     	}
     	teamFlag = imgTeamFlag.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
+    	
+    	if(carNumber == "NOT IN THIS RACE" || carNumber == "FOKOF")
+    	{
+    		imgCarNumber = new ImageProperty("imgCarNumber", "fisa/numbers/9.png");
+    	}
+    	else
+    	{
+    		imgCarNumber = new ImageProperty("imgCarNumber", "fisa/numbers/" + carNumber.toLowerCase() + ".png");
+    	}
+    	//int carNumberWidth = (int)(Math.round(imgCarNumber.getImage().getBaseWidth() * 14/17));
+    	numberIcon = imgCarNumber.getImage().getTextureImage();
+    	
+    	carClass = fastestCar.getVehicleClass();
+    	if(isEditorMode)
+    	{
+    		carClass = "SC1";
+    	}
+    	imgCarClass = new ImageProperty("classIcon", "fisa/class/" + carClass.toLowerCase() + ".png");
+    	classIcon = imgCarClass.getImage().getTextureImage();
     }
     
     @Override
@@ -391,6 +416,8 @@ public class fastestlap2 extends Widget
             texture.drawImage(teamFlag, offsetX + leftXOffset + TextureImage2D.getStringWidth(teamName + "  ", teamFont), offsetY + line2YOffset + 4, false, null);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);
+            texture.drawImage(numberIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ",  normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth("  ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
+            texture.drawImage(classIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth(" ", modelFont) + numberIcon.getWidth() + TextureImage2D.getStringWidth("  ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
         	dsCaption.draw( offsetX, offsetY, caption, texture );
             dsLaptime.draw( offsetX, offsetY, TimingUtil.getTimeAsLaptimeString(laptime.getValue()), texture );
         }

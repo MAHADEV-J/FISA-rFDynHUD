@@ -339,7 +339,10 @@ public class fastestlap2 extends Widget
     	{
     		imgDriverFlag = new ImageProperty("imgDriverFlag", "fisa/flags/" + driverNat.toLowerCase() + ".png");
     	}
-    	driverFlag = imgDriverFlag.getImage().getScaledTextureImage(21, 14, driverFlag, isEditorMode);
+    	float aspectRatio = imgDriverFlag.getImage().getBaseAspect();
+    	int flagHeight = 16;
+    	int flagWidth = (int) Math.round((float) flagHeight * aspectRatio);
+    	driverFlag = imgDriverFlag.getImage().getScaledTextureImage(flagWidth, flagHeight, driverFlag, isEditorMode);
     	
     	if(teamNat == "NOT IN THIS RACE")
     	{
@@ -349,7 +352,10 @@ public class fastestlap2 extends Widget
     	{
     		imgTeamFlag = new ImageProperty("imgTeamFlag", "fisa/flags/" + teamNat.toLowerCase() + ".png");
     	}
-    	teamFlag = imgTeamFlag.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
+    	aspectRatio = imgTeamFlag.getImage().getBaseAspect(); 
+    	flagHeight = 12;
+    	flagWidth = (int) Math.round((float) flagHeight * aspectRatio);
+    	teamFlag = imgTeamFlag.getImage().getScaledTextureImage(flagWidth, flagHeight, teamFlag, isEditorMode);
     	
     	if(carNumber == "NOT IN THIS RACE" || carNumber == "FOKOF")
     	{
@@ -359,7 +365,6 @@ public class fastestlap2 extends Widget
     	{
     		imgCarNumber = new ImageProperty("imgCarNumber", "fisa/numbers/" + carNumber.toLowerCase() + ".png");
     	}
-    	//int carNumberWidth = (int)(Math.round(imgCarNumber.getImage().getBaseWidth() * 14/17));
     	numberIcon = imgCarNumber.getImage().getTextureImage();
     	
     	carClass = fastestCar.getVehicleClass();
@@ -416,7 +421,7 @@ public class fastestlap2 extends Widget
             texture.drawImage(teamFlag, offsetX + leftXOffset + TextureImage2D.getStringWidth(teamName + "  ", teamFont), offsetY + line2YOffset + 4, false, null);
             dsCarMake.draw(offsetX, offsetY, carMake, texture);
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);
-            texture.drawImage(numberIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ",  normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth("  ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
+            texture.drawImage(numberIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ",  normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth("   ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
             texture.drawImage(classIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth(" ", modelFont) + numberIcon.getWidth() + TextureImage2D.getStringWidth("  ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
         	dsCaption.draw( offsetX, offsetY, caption, texture );
             dsLaptime.draw( offsetX, offsetY, TimingUtil.getTimeAsLaptimeString(laptime.getValue()), texture );

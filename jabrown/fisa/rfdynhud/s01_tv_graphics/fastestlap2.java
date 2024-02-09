@@ -2,26 +2,19 @@ package jabrown.fisa.rfdynhud.s01_tv_graphics;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
 import org.openmali.types.twodee.Rect2i;
 
 import jabrown.fisa.rfdynhud.s01_tv_graphics._util.JABrownFISAWidgetSets01_tv_graphics;
-import net.ctdp.rfdynhud.gamedata.GamePhase;
 import net.ctdp.rfdynhud.gamedata.Laptime;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
-import net.ctdp.rfdynhud.gamedata.YellowFlagState;
-import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.DelayProperty;
 import net.ctdp.rfdynhud.properties.FloatProperty;
 import net.ctdp.rfdynhud.properties.FontProperty;
 import net.ctdp.rfdynhud.properties.ImageProperty;
-import net.ctdp.rfdynhud.properties.ImagePropertyWithTexture;
 import net.ctdp.rfdynhud.properties.IntProperty;
 import net.ctdp.rfdynhud.properties.PropertiesContainer;
 import net.ctdp.rfdynhud.properties.PropertyLoader;
@@ -67,7 +60,6 @@ public class fastestlap2 extends Widget
     private IntProperty modelAdjustment = new IntProperty("Model Y Offset Adjustment", 0);
     private IntProperty testNumber = new IntProperty("Test Position Number", 4);
     private IntProperty posAdjustment = new IntProperty("Position Number X Offset Adjustment", 0);
-    private final ImageProperty flagArg = new ImageProperty("flagArg", "fisa/flags/arg.png");
     private ImageProperty imgDriverFlag = new ImageProperty("imgDriverFlag", "");
     private ImageProperty imgTeamFlag = new ImageProperty("imgTeamFlag", "");
     private ImageProperty imgCarNumber = new ImageProperty("imgCarNumber", "");
@@ -111,8 +103,6 @@ public class fastestlap2 extends Widget
     private String caption = null;
     public Laptime lap = null;
     private final FloatValue laptime = new FloatValue( -1f, 0.1f );
-	
-    private Boolean visible = false;
 
     public fastestlap2()
     {
@@ -241,11 +231,6 @@ public class fastestlap2 extends Widget
     	leftXOffset = posXOffset + posWidth + vMargin.getValue();
     	rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
-    	//TODO: figure out why this isn't working
-    	//driverFlag = flagArg.getImage().getScaledTextureImage((Math.round(21/19 * normalFontHeight)), (Math.round(14/19 * normalFontHeight)), driverFlag, isEditorMode);
-    	//driverFlag = flagArg.getImage().getScaledTextureImage(21, 14, driverFlag, isEditorMode);
-    	//teamFlag = flagArg.getImage().getScaledTextureImage(15, 10, teamFlag, isEditorMode);
-    	
     	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset - posAdjustment.getValue(), posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", leftXOffset, line1YOffset, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", leftXOffset, line2YOffset, Alignment.LEFT, false, teamFont.getFont(), isFontAntiAliased(), getFontColor() );
@@ -280,18 +265,16 @@ public class fastestlap2 extends Widget
         {
         	forceCompleteRedraw(true);
             visibleEnd = scoringInfo.getSessionNanos() + visibleTime.getDelayNanos();
-        	visible = true;
         	return true;
         }
     	
+        //fastest race laps never get set under safety car conditions, so no extra checks needed
         if(scoringInfo.getSessionNanos() < visibleEnd )
         {
             forceCompleteRedraw(true);
-            visible = true;
             return true;
         }
     	
-    	visible = false;
     	return false;
     }
     

@@ -288,8 +288,9 @@ public class fastestlap extends Widget
     	driverName = fastestCar.getDriverNameShort().toUpperCase();
     	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
     	driverPos.update(fastestCar.getPlace(false));
-    	if( laptime.isValid() && (fastestCar.getVehicleInfo() != null || fastestCar.isPlayer()) )
-    	{
+    	//removing this check because it doesn't always work
+    	//if( laptime.isValid() && (fastestCar.getVehicleInfo() != null || fastestCar.isPlayer()) )
+    	//{
     		driverNat = driverData.split(";")[0];
         	teamName = driverData.split(";")[1];
         	teamNat = driverData.split(";")[2];
@@ -297,12 +298,12 @@ public class fastestlap extends Widget
         	carModel = driverData.split(";")[4];
         	carNumber = driverData.split(";")[5];
         	posString = driverPos.getValueAsString();
-    	}
-    	else
-    	{
-    		teamName = "TEAM";
-    		carMake = "CAR";
-    	}
+    	//}
+    	//else
+    	//{
+    	//	teamName = "TEAM";
+    	//	carMake = "CAR";
+    	//}
     	if(isEditorMode)
     	{
     		driverNat = "ITA";

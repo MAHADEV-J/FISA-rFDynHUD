@@ -11,6 +11,7 @@ import net.ctdp.rfdynhud.gamedata.Laptime;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.VehicleScoringInfo;
+import net.ctdp.rfdynhud.input.InputAction;
 import net.ctdp.rfdynhud.properties.DelayProperty;
 import net.ctdp.rfdynhud.properties.FloatProperty;
 import net.ctdp.rfdynhud.properties.FontProperty;
@@ -86,6 +87,7 @@ public class indivtiming extends Widget
 	//private int rightXOffset = 0;
 	private final DelayProperty visibleTime;
 	private long visibleEnd;
+	private Boolean visible = true;
 	
 	//the data it needs
     private final IntValue driverPos = new IntValue(0);
@@ -212,7 +214,7 @@ public class indivtiming extends Widget
     	normalFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", normalFont) * lineHeight.getValue());
     	modelFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", modelFont) * lineHeight.getValue());
     	teamFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", teamFont) * lineHeight.getValue());
-    	captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
+    	//captionFontHeight = (int) Math.ceil(TextureImage2D.getStringHeight("0%C", captionFont) * lineHeight.getValue());
     	posHeight = normalFontHeight * 3;
     	posWidth = Math.max(posHeight, TextureImage2D.getStringWidth("222", posFont) + 2 * padding.getValue()); //width of the "square"
     	posXOffset = aspectRatioXOffset.getValue() + vMargin.getValue() / 2;
@@ -233,12 +235,14 @@ public class indivtiming extends Widget
     	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", leftXOffset, line2YOffset, Alignment.LEFT, false, teamFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCarMake = drawnStringFactory.newDrawnString( "dsCarMake", leftXOffset, line3YOffsetBig, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", leftXOffset, line3YOffsetSmall - modelAdjustment.getValue(), Alignment.LEFT, false, modelFont.getFont(), isFontAntiAliased(), getFontColor() );
-    }
+    } 
     
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
-        ScoringInfo scoringInfo = gameData.getScoringInfo();
+    	Boolean visible = super.updateVisibility(gameData, isEditorMode);
+    	
+        //ScoringInfo scoringInfo = gameData.getScoringInfo();
         //lap = scoringInfo.getFastestLaptime();
         //if(lap == null || !lap.isFinished())
         //{
@@ -255,19 +259,25 @@ public class indivtiming extends Widget
         }
         
         //it only becomes visible once at least 1 lap has been completed by the leader
-        if(laptime.hasChanged() && laptime.isValid() && scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() > 0)
+        //if(laptime.hasChanged() && laptime.isValid() && scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() > 0)
+        //{
+        //	forceCompleteRedraw(true);
+         //   visibleEnd = scoringInfo.getSessionNanos() + visibleTime.getDelayNanos();
+        //	return true;
+        //}
+    	
+        //if(scoringInfo.getSessionNanos() < visibleEnd )
+        //{
+         //   forceCompleteRedraw(true);
+        //    return true;
+        //}
+    	
+        if(visible)
         {
         	forceCompleteRedraw(true);
-            visibleEnd = scoringInfo.getSessionNanos() + visibleTime.getDelayNanos();
         	return true;
         }
-    	
-        if(scoringInfo.getSessionNanos() < visibleEnd )
-        {
-            forceCompleteRedraw(true);
-            return true;
-        }
-    	
+        
     	return false;
     }
     

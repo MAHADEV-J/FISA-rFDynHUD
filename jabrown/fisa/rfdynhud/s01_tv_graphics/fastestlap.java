@@ -285,7 +285,7 @@ public class fastestlap extends Widget
     	
     	carModel = "TEST";
     	
-    	driverName = fastestCar.getDriverNameShort().toUpperCase();
+    	driverName = fastestCar.getDriverNameShort();
     	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
     	driverPos.update(fastestCar.getPlace(false));
     	//removing this check because it doesn't always work

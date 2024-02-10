@@ -243,6 +243,8 @@ public class indivtiming extends Widget
     	Boolean visible = super.updateVisibility(gameData, isEditorMode);
     	
         //ScoringInfo scoringInfo = gameData.getScoringInfo();
+        //VehicleScoringInfo currentCar = scoringInfo.getViewedVehicleScoringInfo();
+        
         //lap = scoringInfo.getFastestLaptime();
         //if(lap == null || !lap.isFinished())
         //{
@@ -288,7 +290,7 @@ public class indivtiming extends Widget
     	
     	carModel = "TEST";
     	
-    	driverName = currentCar.getDriverNameShort().toUpperCase();
+    	driverName = currentCar.getDriverNameShort();
     	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(currentCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
     	driverPos.update(currentCar.getPlace(false));
     	//removing this check because it doesn't always work

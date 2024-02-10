@@ -18,8 +18,8 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Add car numbers and class circles to fastest lap widget (HIGH PRIORITY)
 * Look into why the fastest lap widget apparently doesn't always show driver data correctly
+* Create individual car timing widget
 * Make weather widget a part of timing tower widget (medium low priority)
 * Make timing tower disappear on formation lap (low priority)
 * Deepen investigation into what is causing the game to crash sometimes
@@ -27,7 +27,7 @@ For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. 
 * Add functionality to the session status row for races that have a time limit (not very high priority until it rains)
 * Look into timer class for race control widget visibility automatic toggling (not very high priority)
 * Show a flag icon next to the name of drivers who have finished (low priority)
-* Create more widgets (individual car timing; old-fashioned thick timing bar with two columns) (probably won't be implemented until after first FISA WSCC race)
+* Create new widget with old-fashioned thick timing bar with two columns (probably won't be implemented until after first FISA WSCC race)
 * Add an area to the timing tower that becomes visible during pit stops and shows how long the pit stop is (optional, very low priority)
 * Get rid of "magic numbers" throughout the code (i.e., create more variables)
 

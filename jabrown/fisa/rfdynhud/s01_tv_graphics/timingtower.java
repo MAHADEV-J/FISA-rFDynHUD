@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 
 import net.ctdp.rfdynhud.gamedata.FinishStatus;
 import net.ctdp.rfdynhud.gamedata.GamePhase;
+import net.ctdp.rfdynhud.gamedata.Laptime;
 import net.ctdp.rfdynhud.gamedata.LiveGameData;
 import net.ctdp.rfdynhud.gamedata.ScoringInfo;
 import net.ctdp.rfdynhud.gamedata.SessionLimit;
@@ -64,7 +65,7 @@ public class timingtower extends Widget
     private IntProperty fontxtimeoffset = new IntProperty("X Time Font Offset", 0);
     private final IntProperty numVeh = new IntProperty( "numberOfVehicles", 20 );
     private int[] startedPositions = null;
-    private final IntValue currentLap = new IntValue();
+    private final IntValue currentLap = new IntValue(0);
     private short shownData = 0; //0-4-gaps 1-place gained 2-pit stops
     private final IntValue drawnCars = new IntValue();
     private final IntValue carsOnLeadLap = new IntValue();
@@ -77,8 +78,25 @@ public class timingtower extends Widget
     private ColorProperty GainedFontColor;
     private float hideTime = -1f;
     private static final InputAction ToggleGapsOrStops = new InputAction ("ToggleGapsOrStops", false); //defines an input action
-    private FloatValue currentSector = new FloatValue();
+	private final DelayProperty disappearShort;
+	private final DelayProperty disappearLong;
+	private long invisibleEnd;
+	private Boolean yellow = false;
+    public Laptime lap = null;
+    private final FloatValue laptime = new FloatValue( -1f, 0.1f );
    
+    public timingtower()
+    {
+        super( JABrownFISAWidgetSets01_tv_graphics.INSTANCE, JABrownFISAWidgetSets01_tv_graphics.WIDGET_PACKAGE_S01_TV_GRAPHICS, 20.0f, 32.5f );
+        
+        getBackgroundProperty().setColorValue( "#00000000" );
+        getFontProperty().setFont( JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_FONT_NAME );
+        getFontColorProperty().setColor( JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR1_NAME );
+        disappearShort = new DelayProperty("visibleTime", net.ctdp.rfdynhud.properties.DelayProperty.DisplayUnits.SECONDS, 5);
+        disappearLong = new DelayProperty("visibleTime", net.ctdp.rfdynhud.properties.DelayProperty.DisplayUnits.SECONDS, 10);
+        invisibleEnd = 0;
+    }
+	
     @Override
     public void onRealtimeEntered( LiveGameData gameData, boolean isEditorMode )
     {
@@ -100,7 +118,7 @@ public class timingtower extends Widget
     @Override
     protected void initialize( LiveGameData gameData, boolean isEditorMode, DrawnStringFactory drawnStringFactory, TextureImage2D texture, int width, int height )
     {
-    	currentSector = new FloatValue();
+    	//currentSector = new FloatValue();
     	
         int maxNumItems = numVeh.getValue();
         dsPos = new DrawnString[maxNumItems];
@@ -332,61 +350,109 @@ public class timingtower extends Widget
     protected Boolean updateVisibility( LiveGameData gameData, boolean isEditorMode )
     {
         //super.updateVisibility( gameData, isEditorMode );
-        Boolean result = true;
-        Boolean bongo = true;
+        //Boolean result = true; //does it matter if this is a local variable or a class property?
+        //Boolean bongo = true;
         
         ScoringInfo scoringInfo = gameData.getScoringInfo();
+        if((int)scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() != currentLap.getValue())
+        {
+        	currentLap.update((int)scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap());	
+        }
         
         clearArrayValues(Math.min(20, scoringInfo.getNumVehicles()));
         FillArrayValues(Math.min(20, scoringInfo.getNumVehicles()), scoringInfo, shownData, isEditorMode, gameData);
         
+        lap = scoringInfo.getFastestLaptime();
+        if(lap == null || !lap.isFinished())
+        {
+        	laptime.update(-1f);
+        }
+        else
+        {
+            laptime.update(lap.getLapTime());	
+        }
+        
         if (scoringInfo.getYellowFlagState() == YellowFlagState.PENDING)
         {
-        	bongo = false;
+        	forceCompleteRedraw(true);
+        	if(yellow == false)
+        	{
+        		yellow = true;
+        		invisibleEnd = scoringInfo.getSessionNanos() + disappearLong.getDelayNanos();
+        	}
+        	//bongo = false;
         }
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP)
-        {
+        //if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW && scoringInfo.getYellowFlagState() != YellowFlagState.LAST_LAP)
+        //{
         	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
         	//{
-            	bongo = false;	
+            	//bongo = false;	
         	//}
         	//else
         	//{
         		//bongo = true;
         	//}
-        }
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
+        //}
+        if (currentLap.hasChanged() && scoringInfo.getYellowFlagState() == YellowFlagState.LAST_LAP)
         {
+        	forceCompleteRedraw(true);
+        	invisibleEnd = scoringInfo.getSessionNanos() + disappearLong.getDelayNanos();
         	//leaving this in here in case we want to go back to it later
         	//if (scoringInfo.getLeadersVehicleScoringInfo().getLapDistance() < gameData.getTrackInfo().getTrack().getSector1Length())
         	//{
-            	bongo = false;	
+            	//bongo = false;	
         	//}
         	//else
         	//{
         		//bongo = true;
         	//}
         }
-        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
-        {
-        	bongo = false;
+        //if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
+        //{
+        	//bongo = false;
         	//bongo = true;
-        }
+        //}
         if (scoringInfo.getOnPathWetness() >= 0.2f) //when it's raining on ovals
         {
-        	bongo = false;
+        	//result = false;
+        	return false;
         }
         
-        if (bongo == false)
+        if(laptime.hasChanged() && laptime.isValid() && scoringInfo.getLeadersVehicleScoringInfo().getLapsCompleted() > 0)
         {
-        	//appearTime = scoringInfo.getSessionTime() + invisibleTime;
-        	result = false;
         	forceCompleteRedraw(true);
+            invisibleEnd = scoringInfo.getSessionNanos() + disappearShort.getDelayNanos();
+        	//result = false;
+        	return false;
         }
         
-        return result;
+    	if(yellow == true && scoringInfo.getYellowFlagState() != YellowFlagState.PENDING)
+    	{
+    		yellow = false;
+    	}
         
+        if(isEditorMode)
+        {
+        	return true;
+        }
+        
+        if (scoringInfo.getSessionNanos() < invisibleEnd)
+        {
+        	forceCompleteRedraw(true);
+        	//result = false;
+        	return false;
+        }
+        
+        //result = true;
+        
+        //if (result == false)
+        //{
+        	//return false;
+        //}
+        
+        return true;    
     }
+    
     @Override
     protected void drawBackground( LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height, boolean isRoot )
     {
@@ -489,14 +555,6 @@ public class timingtower extends Widget
         	statusFontColor = Color.BLACK;
         	forceCompleteRedraw(true);
         }
-        //if caution or local yellow: black on yellow
-        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
-		{
-        	statusColor = Color.YELLOW;
-        	statusFontColor = Color.BLACK;
-        	forceCompleteRedraw(true); //apparently this is necessary
-		}
-        //TODO: add some code for when it goes to green flag after yellow (think this through later) colour: 33, 119, 28
         //if finished or normal: white on grey
         if (scoringInfo.getLeadersVehicleScoringInfo().getFinishStatus() == FinishStatus.FINISHED || (scoringInfo.getGamePhase() == GamePhase.GREEN_FLAG && scoringInfo.getLeadersVehicleScoringInfo().getCurrentLap() != scoringInfo.getMaxLaps()))
         {
@@ -504,6 +562,20 @@ public class timingtower extends Widget
         	statusFontColor = fontColor2.getColor();
         	forceCompleteRedraw(true);
         }
+        //if going green after caution: white on green
+        if (scoringInfo.getYellowFlagState() == YellowFlagState.RESUME)
+        {
+        	statusColor = new Color(0, 204, 0, 255);
+        	statusFontColor = Color.WHITE;
+        	forceCompleteRedraw(true);
+        }
+        //if caution or local yellow: black on yellow
+        if (scoringInfo.getGamePhase() == GamePhase.FULL_COURSE_YELLOW || scoringInfo.getSectorYellowFlag(1) || scoringInfo.getSectorYellowFlag(2) || scoringInfo.getSectorYellowFlag(3))
+		{
+        	statusColor = Color.YELLOW;
+        	statusFontColor = Color.BLACK;
+        	forceCompleteRedraw(true); //apparently this is necessary
+		}
         //if race stopped: white on red
         if (scoringInfo.getGamePhase() == GamePhase.SESSION_STOPPED)
         {
@@ -620,14 +692,5 @@ public class timingtower extends Widget
         super.prepareForMenuItem();
         
         getFontProperty().setFont( "Dialog", Font.PLAIN, 6, false, true );
-    }
-    
-    public timingtower()
-    {
-        super( JABrownFISAWidgetSets01_tv_graphics.INSTANCE, JABrownFISAWidgetSets01_tv_graphics.WIDGET_PACKAGE_S01_TV_GRAPHICS, 20.0f, 32.5f );
-        
-        getBackgroundProperty().setColorValue( "#00000000" );
-        getFontProperty().setFont( JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_FONT_NAME );
-        getFontColorProperty().setColor( JABrownFISAWidgetSets01_tv_graphics.FONT_COLOR1_NAME );
     }
 }

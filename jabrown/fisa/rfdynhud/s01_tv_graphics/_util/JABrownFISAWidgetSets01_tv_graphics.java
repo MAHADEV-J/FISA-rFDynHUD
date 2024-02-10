@@ -66,6 +66,38 @@ public class JABrownFISAWidgetSets01_tv_graphics extends WidgetSet
     public static final StringMapping FISA_S01_TV_GRAPHICS_CAPTION_FONT = new StringMapping( FISA_S01_TV_GRAPHICS_CAPTION_FONT_NAME, FontUtils.getFontString( "Gill Sans MT", Font.BOLD, 24, true, true ) );
     public static final StringMapping FISA_S01_TV_GRAPHICS_SMALL_FONT = new StringMapping( FISA_S01_TV_GRAPHICS_FONT_NAME, FontUtils.getFontString( "Gill Sans MT", Font.BOLD, 22, true, true ) );
     
+    public static String getDriverData(String driverName, java.io.File getConfigFolder)
+    {
+    	File ini;
+    	ini = new File(getConfigFolder, "driverdata.ini");
+		String driverData = "NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE;NOT IN THIS RACE";
+    	
+    	if(ini.exists())
+    	{
+    		try
+    		{
+    			int delimiter;
+    			String line;
+    			BufferedReader br = new BufferedReader(new FileReader(ini));
+    			
+    			while((line = br.readLine()) != null)
+    			{
+    				delimiter = line.lastIndexOf('=');
+    				if(driverName.equals(line.substring(0, delimiter - 1)))
+    				{
+    					driverData = line.substring(delimiter+2,line.length());
+    					br.close();
+    					return driverData;
+    				}
+    			}
+    			br.close();
+    		}
+    		catch (Throwable t)
+    		{}
+    	}
+		return driverData;
+    }
+    
     public String getDefaultNamedColorValue( String name )
     {
         if(name.equals("StandardFontColor"))

@@ -69,7 +69,7 @@ public class indivtiming extends Widget
 	private int normalFontHeight = 0;
 	private int modelFontHeight = 0;
 	private int teamFontHeight = 0;
-	private int captionFontHeight = 0;
+	//private int captionFontHeight = 0;
 	private int posHeight = 0;
 	private int posWidth = 0;
 	private int posXOffset = 0;
@@ -262,7 +262,6 @@ public class indivtiming extends Widget
         	return true;
         }
     	
-        //fastest race laps never get set under safety car conditions, so no extra checks needed
         if(scoringInfo.getSessionNanos() < visibleEnd )
         {
             forceCompleteRedraw(true);
@@ -275,13 +274,13 @@ public class indivtiming extends Widget
     protected void getDriverInfo(LiveGameData gameData, boolean isEditorMode)
     {
     	ScoringInfo scoringInfo = gameData.getScoringInfo();
-    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
+    	VehicleScoringInfo currentCar = scoringInfo.getViewedVehicleScoringInfo();
     	
     	carModel = "TEST";
     	
-    	driverName = fastestCar.getDriverNameShort().toUpperCase();
-    	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(fastestCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
-    	driverPos.update(fastestCar.getPlace(false));
+    	driverName = currentCar.getDriverNameShort().toUpperCase();
+    	String driverData = JABrownFISAWidgetSets01_tv_graphics.getDriverData(currentCar.getDriverName(), gameData.getFileSystem().getConfigFolder());
+    	driverPos.update(currentCar.getPlace(false));
     	//removing this check because it doesn't always work
     	//if( laptime.isValid() && (fastestCar.getVehicleInfo() != null || fastestCar.isPlayer()) )
     	//{
@@ -345,7 +344,7 @@ public class indivtiming extends Widget
     	}
     	numberIcon = imgCarNumber.getImage().getTextureImage();
     	
-    	carClass = fastestCar.getVehicleClass();
+    	carClass = currentCar.getVehicleClass();
     	if(isEditorMode)
     	{
     		carClass = "SC1";
@@ -372,8 +371,8 @@ public class indivtiming extends Widget
     	square = new Rect2i(posXOffset, posYOffset, posWidth, posHeight); //the "square" (not really a square) that the position number is drawn on
     	
     	ScoringInfo scoringInfo = gameData.getScoringInfo();
-    	VehicleScoringInfo fastestCar = scoringInfo.getFastestLapVSI();
-    	if(fastestCar.getPlace(false) == 1)
+    	VehicleScoringInfo currentCar = scoringInfo.getViewedVehicleScoringInfo();
+    	if(currentCar.getPlace(false) == 1)
     	{
     		textureCanvas.setColor(new Color(161, 9, 11, 255)); //make the square red if the car is in first place
     	}
@@ -388,7 +387,7 @@ public class indivtiming extends Widget
     @Override
     protected void drawWidget( Clock clock, boolean needsCompleteRedraw, LiveGameData gameData, boolean isEditorMode, TextureImage2D texture, int offsetX, int offsetY, int width, int height )
     {
-        if ( needsCompleteRedraw || laptime.hasChanged() )
+        if ( needsCompleteRedraw )
         {
         	dsDriverPos.draw( offsetX, offsetY, posString, texture );
             dsDriverName.draw( offsetX, offsetY, driverName, texture );

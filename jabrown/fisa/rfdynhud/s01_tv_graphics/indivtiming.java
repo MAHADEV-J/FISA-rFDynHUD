@@ -42,8 +42,6 @@ public class indivtiming extends Widget
     private DrawnString dsTeamName = null;
     private DrawnString dsCarMake = null;
     private DrawnString dsCarModel = null;
-    private DrawnString dsCaption = null;
-    private DrawnString dsLaptime = null;
     private Rect2i rectangle = null;
     private Rect2i square = null;
     private final FontProperty posFont = new FontProperty("posFont", JABrownFISAWidgetSets01_tv_graphics.FISA_S01_TV_GRAPHICS_LARGE_FONT.getKey());
@@ -80,12 +78,12 @@ public class indivtiming extends Widget
 	private int line3YOffsetBig = 0;
 	private int line3YOffsetSmall = 0;
 	private int line2YOffset = 0;
-	private int captionYOffset = 0;
+	//private int captionYOffset = 0;
 	private int line1YOffset = 0;
 	private int posNumYOffset = 0;
 	private int posNumXOffset = 0;
 	private int leftXOffset = 0;
-	private int rightXOffset = 0;
+	//private int rightXOffset = 0;
 	private final DelayProperty visibleTime;
 	private long visibleEnd;
 	
@@ -100,7 +98,6 @@ public class indivtiming extends Widget
     private String carModel = null;
     private String carNumber = null;
     private String carClass = null;
-    private String caption = null;
     public Laptime lap = null;
     private final FloatValue laptime = new FloatValue( -1f, 0.1f );
 
@@ -224,36 +221,33 @@ public class indivtiming extends Widget
     	line3YOffsetBig = freeSpace - normalFontHeight;
     	line3YOffsetSmall = freeSpace - modelFontHeight;
     	line2YOffset = line3YOffsetBig - teamFontHeight;
-    	captionYOffset = line3YOffsetBig - captionFontHeight;
+    	//captionYOffset = line3YOffsetBig - captionFontHeight;
     	line1YOffset = line2YOffset - normalFontHeight;
     	posNumYOffset = line1YOffset + padding.getValue();
     	posNumXOffset = posXOffset + (posWidth - TextureImage2D.getStringWidth("222", posFont) / 2);
     	leftXOffset = posXOffset + posWidth + vMargin.getValue();
-    	rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
+    	//rightXOffset = width - aspectRatioXOffset.getValue() - vMargin.getValue();
     	
     	dsDriverPos = drawnStringFactory.newDrawnString( "dsDriverPos", posNumXOffset - posAdjustment.getValue(), posNumYOffset, Alignment.CENTER, false, posFont.getFont(), isFontAntiAliased(), getFontColor() );
         dsDriverName = drawnStringFactory.newDrawnString( "dsDriverName", leftXOffset, line1YOffset, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsTeamName = drawnStringFactory.newDrawnString( "dsTeamName", leftXOffset, line2YOffset, Alignment.LEFT, false, teamFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCarMake = drawnStringFactory.newDrawnString( "dsCarMake", leftXOffset, line3YOffsetBig, Alignment.LEFT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
     	dsCarModel = drawnStringFactory.newDrawnString( "dsCarModel", leftXOffset, line3YOffsetSmall - modelAdjustment.getValue(), Alignment.LEFT, false, modelFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsCaption = drawnStringFactory.newDrawnString( "dsCaption", rightXOffset, captionYOffset, Alignment.RIGHT, false, captionFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	dsLaptime = drawnStringFactory.newDrawnString( "dsLaptime", rightXOffset, line3YOffsetBig, Alignment.RIGHT, false, normalFont.getFont(), isFontAntiAliased(), getFontColor() );
-    	caption = "FASTEST LAP";
     }
     
     @Override
     protected Boolean updateVisibility ( LiveGameData gameData, boolean isEditorMode )
     {
         ScoringInfo scoringInfo = gameData.getScoringInfo();
-        lap = scoringInfo.getFastestLaptime();
-        if(lap == null || !lap.isFinished())
-        {
-        	laptime.update(-1f);
-        }
-        else
-        {
-            laptime.update(lap.getLapTime());	
-        }
+        //lap = scoringInfo.getFastestLaptime();
+        //if(lap == null || !lap.isFinished())
+        //{
+        	//laptime.update(-1f);
+        //}
+        //else
+        //{
+            //laptime.update(lap.getLapTime());	
+        //}
         
         if(isEditorMode)
         {
@@ -407,8 +401,6 @@ public class indivtiming extends Widget
             dsCarModel.draw(dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont), offsetY, carModel, texture, true);
             texture.drawImage(numberIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ",  normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth("   ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
             texture.drawImage(classIcon, offsetX + leftXOffset + dsCarMake.getLastWidth() + TextureImage2D.getStringWidth("  ", normalFont) + dsCarModel.getLastWidth() + TextureImage2D.getStringWidth(" ", modelFont) + numberIcon.getWidth() + TextureImage2D.getStringWidth("  ", modelFont), offsetY + line3YOffsetBig + 6, false, null);
-        	dsCaption.draw( offsetX, offsetY, caption, texture );
-            dsLaptime.draw( offsetX, offsetY, TimingUtil.getTimeAsLaptimeString(laptime.getValue()), texture );
         }
     }
 }

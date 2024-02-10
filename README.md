@@ -18,7 +18,6 @@ So the BOTTOM LINE is: you are FREE to use, modify, and distribute this code in 
 For more information, follow me on Twitter: https://twitter.com/jaybeebrtweets. I (sometimes) comment on my progress there.
 
 ## To-do list
-* Look into why the fastest lap widget apparently doesn't always show driver data correctly
 * Create individual car timing widget
 * Make weather widget a part of timing tower widget (medium low priority)
 * Make timing tower disappear on formation lap (low priority)
